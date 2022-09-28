@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <title>Management Device Server</title>
+</head>
+<body>
+
+    <div style="height: 20%; background-color: black;">
+        <div style="text-align: center;" class="bg-primary text-white">
+            <h2>Management device server</h2>
+        </div>
+        <div>
+            <button id="addNDevice" class="btn btn-primary">Add</button>
+            <button id="deleteDevice" class="btn btn-danger">Delete</button>
+        </div>
+        <div id="menu"></div>
+        <br>
+    </div>
+
+        <table id="devicesList" class="table table-hover" style="text-align: center;">
+            <tr>
+                <th class="bg-primary" style="color: white;">
+                    Name
+                </th>
+                <th class="bg-primary" style="color: white;">
+                    Protocol
+                </th>
+                <th class="bg-primary" style="color: white;">
+                    Direction
+                </th>
+            </tr>
+        </table> 
+
+    <script>
+
+        let addNDevice = document.getElementById("addNDevice");
+        let deleteDevice = document.getElementById("deleteDevice");
+        let menu = document.getElementById("menu");
+
+        let devicesArray = [];
+        let deviceSelected = 0;
+        let devicesList = document.getElementById("devicesList");
+
+
+        async function start(){
+            let responseString = await fetch("/configuration.json")
+            let responseJson = await responseString.json()
+            console.log(responseJson);
+
+            if(responseJson){
+
+
+                addNDevice.addEventListener("click", function(){
+                    console.log("agregando");
+                    showAddDeviceMenu();
+                    
+                });
+
+                deleteDevice.addEventListener("click", function(){
+                    console.log("eliminando");
+                });
+
+
+                for(let i in responseJson.devices){
+
+                    let deviceHtml = document.createElement("tr");
+
+                    devicesArray.push(
+                        {
+                            configuration: responseJson.devices[i],
+                            html: deviceHtml
+                        }
+                    );
+
+                    devicesArray[i].html.classList.add("table-primary");
+                    devicesArray[i].html.innerHTML = `
+                                <th class="bg-primary" style="color: white;">${devicesArray[i].configuration.name}</th>
+                                <td>${devicesArray[i].configuration.protocol}</td>
+                                <td>${devicesArray[i].configuration.direction}</td>
+                    `;
+
+                    devicesArray[i].html.addEventListener("click", function(){
+                        deviceSelected = i;
+                        for(let i of devicesArray){
+                            i.html.classList.remove("bg-primary");
+                            i.html.classList.remove("text-white");
+                        }
+                        devicesArray[i].html.classList.add("bg-primary");
+                        devicesArray[i].html.classList.add("text-white");
+                        console.log(deviceSelected)
+                    });
+
+                    devicesList.appendChild(deviceHtml)
+                }
+                devicesArray[0].html.classList.add("bg-primary");
+                devicesArray[0].html.classList.add("text-white");
+                console.log(devicesArray);
+            }else{
+                console.error("recurso no encontrado")
+            }
+
+        }
+        start();
+
+        function showAddDeviceMenu(){
+            menu.innerHTML = `
+                <div class="text-white" style="text-align: center;">
+                    <label>Name:</label><input type="text">
+                    <br>
+                    <label>Protocol:</label>
+                    <select name="protocol">
+                        <option value="tcp/ip">tcp/ip</option>
+                        <option value="serial">serial</option>
+                    </select>
+                    <br>
+                    <label>Direction:</label><input type="text">
+                    <br>
+                    <button class="btn btn-success">Confirm</button>
+                </div>
+            `
+        }
+
+        function hideAddDeviceMenu(){
+            menu.innerHTML = ``; 
+        }
+
+    </script>
+</body>
+</html>
