@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+    <title>Management Device Server</title>
+</head>
+<body>
+
+    <div style="height: 20%; background-color: black;">
+        <div style="text-align: center;" class="bg-primary text-white">
+            <h2>Management device server</h2>
+        </div>
+        <div style="text-align: center;">
+            <button id="addNewDevice" class="btn btn-primary btn-sm">Add</button>
+            <button id="deleteDevice" class="btn btn-danger btn-sm">Delete</button>
+        </div>
+        <div id="menuAddDevice" style="visibility: hidden; position: absolute;">
+            <div class="text-white" style="text-align: center; align-items: center;">
+                <br>
+                    <table style="width: 50%; margin-left: 25%; border-radius: 10px; padding: 5%;" class="bg-primary">
+                        <tr>
+                        <div>
+                            <td>
+                                <label>Name:</label>
+                            </td>
+                            <td>
+                                <input id="addNewDeviceMenuName" type="text" placeholder="deviceName">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Protocol:</label>
+                            </td>
+                            <td>
+                                <select id="addNewDeviceMenuSelectProtocol" name="protocol" style="width: 20%; text-align:center;">
+                                    <option value="tcp/ip" selected>tcp/ip</option>
+                                    <option value="serial">serial</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Direction:</label>
+                            </td>
+                            <td id="divMenuSelectProtocol">
+                                <div>
+                                    <input type="number" id="addNewDeviceMenuIp0" style="width: 20%;" value="192">.
+                                    <input type="number" id="addNewDeviceMenuIp1" style="width: 20%;" value="168">.
+                                    <input type="number" id="addNewDeviceMenuIp2" style="width: 20%;" value="4">.
+                                    <input type="number" id="addNewDeviceMenuIp3" style="width: 20%;" value="1">
+                                </div>
+                                <div style="visibility: hidden;">
+                                    <select id="addNewDeviceMenuSelectPort" name="protocol" style="width: 20%; text-align:center;">
+                                        <option value="COM1">COM1</option>
+                                        <option value="COM2">COM2</option>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <button id="buttonConfirmMenuAddDevice" class="btn btn-primary btn-sm">Confirm</button>
+                </div>
+        </div>
+        <br>
+    </div>
+
+        <table id="devicesList" class="table table-hover" style="text-align: center;">
+            <tr>
+                <th class="bg-primary" style="color: white;">
+                    Name
+                </th>
+                <th class="bg-primary" style="color: white;">
+                    Protocol
+                </th>
+                <th class="bg-primary" style="color: white;">
+                    Direction
+                </th>
+            </tr>
+        </table> 
+
+    <script src="./index.js"></script>
+</body>
+</html>
