@@ -1,1 +1,1 @@
-{"devices":[{"name":"camera one","protocol":"tcp/ip","direction":"192.168.0.8"},{"name":"camera two","protocol":"tcp/ip","direction":"192.168.0.9"},{"name":"camera three","protocol":"tcp/ip","direction":"192.168.0.10"},{"name":"camera four","protocol":"tcp/ip","direction":"192.168.4.1"},{"name":"camera five","protocol":"tcp/ip","direction":"192.168.4.4"}]}
+{"devices":[{"name":"camera one","protocol":"tcp/ip","direction":"192.168.4.1"},{"name":"camera teest","protocol":"tcp/ip","direction":"192.168.4.2"}]}

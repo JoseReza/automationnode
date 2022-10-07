@@ -67,7 +67,7 @@ async function start() {
       }
 
       let response = await fetch("/data", {
-        method: "PUT",
+        method: "put",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -83,7 +83,24 @@ async function start() {
     });
 
     deleteDevice.addEventListener("click", async function () {
-      console.log("eliminando");
+      let body = {
+        deleteDevice: true,
+        device: devicesArray[deviceSelected].configuration
+      }
+      let response = await fetch("/data", {
+        method: "delete",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      let responseJson = await response.json();
+      
+      if(responseJson.return == true){
+        location.reload();
+      }
     });
 
     for (let i in responseJson.devices) {
