@@ -1,1 +1,1 @@
-{"devices":[{"name":"camera one","protocol":"tcp/ip","direction":"192.168.4.1"},{"name":"camera teest","protocol":"tcp/ip","direction":"192.168.4.2"}]}
+{"devices":[{"name":"camera one","protocol":"tcp/ip","direction":"192.168.137.69"}]}

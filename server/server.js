@@ -43,8 +43,16 @@ app.delete("/data", function(req, res){
   res.send(req.body);
 });
 
-app.get("/streaming", function (req, res) {
-  res.send({ response: 200 });
+app.get("/capture", function (req, res) {
+  console.log(req.query);
+  if(req.query){
+    for(let deviceData of deviceListener.getDeviceData()){
+      console.log(deviceData);
+      if(deviceData.name == req.query.name){
+        res.send("<img src=" + deviceData.base64 + "></img>");
+      }
+    }
+  }
 });
 
 app.listen(port, () => {

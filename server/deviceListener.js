@@ -1,7 +1,8 @@
 const fetch = require("node-fetch");
 const time = require("./time");
+const fs = require("fs");
 
-let intervalListenerDelay = 500;
+let intervalListenerDelay = 50;
 let stop = false;
 let deviceData = [];
 
@@ -15,8 +16,8 @@ function stopListener() {
 }
 
 async function listenerLoop(devices) {
+  
   let newDeviceData = [];
-  console.log(`-->Listening: ${JSON.stringify(devices)}`);
 
   for (let device of devices) {
     let data = undefined;
@@ -27,27 +28,41 @@ async function listenerLoop(devices) {
         data = await fetch(`http://${device.direction}/capture`, {
           signal: controller.signal,
         });
-        data = await data.text();
+        data = await data.blob();
       } catch {
         console.error(`-->Not listened: ${JSON.stringify(device)}`);
       }
     }
 
-    newDeviceData.push({
-      ...device,
-      data,
-    });
+    let base64 = "";
 
-    console.log(data);
+    try {
+      data = Buffer.from(await data.arrayBuffer());
+      data = data.toString("base64");
+      base64 = "data:image/png;base64," + data;
+
+      newDeviceData.push({
+        ...device,
+        base64,
+      });
+
+      deviceData = newDeviceData;
+
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  deviceData = newDeviceData;
+  
 
   if (!stop) {
+    await time.wait(intervalListenerDelay);
     await listenerLoop(devices);
   }
-
-  await time.wait(1000);
 }
 
-module.exports = { startListener, stopListener, deviceData };
+function getDeviceData(){
+  return deviceData;
+}
+
+module.exports = { startListener, stopListener, getDeviceData };
