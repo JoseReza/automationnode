@@ -22,7 +22,10 @@ async function listenerLoop(devices) {
   for (let device of devices) {
     let data = undefined;
     if (device.protocol == "tcp/ip") {
+
+      
       try {
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 1000);
         data = await fetch(`http://${device.direction}/capture`, {
@@ -39,8 +42,9 @@ async function listenerLoop(devices) {
     try {
       data = Buffer.from(await data.arrayBuffer());
       data = data.toString("base64");
+      
       base64 = "data:image/png;base64," + data;
-
+      
       newDeviceData.push({
         ...device,
         base64,
@@ -51,6 +55,7 @@ async function listenerLoop(devices) {
     } catch (error) {
       console.error(error);
     }
+
   }
 
   

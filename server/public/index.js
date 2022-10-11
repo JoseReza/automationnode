@@ -118,6 +118,21 @@ async function start() {
                                 <td>${devicesArray[i].configuration.direction}</td>
                     `;
 
+      let tdElement = document.createElement("td");
+      let buttonVideo = document.createElement("button");
+      buttonVideo.innerText = "View";
+      buttonVideo.classList.add("btn");
+      buttonVideo.classList.add("btn-info");
+      buttonVideo.style.color = "black";
+      tdElement.appendChild(buttonVideo);
+
+      devicesArray[i].html.appendChild(tdElement);
+
+      buttonVideo.addEventListener("click", function(){
+        let windowVideo = window.open();
+        windowVideo.document.write(`<img src="http://${location.host}/capture?name=${devicesArray[i].configuration.name}"></img>`)
+      });
+
       devicesArray[i].html.addEventListener("click", function () {
         deviceSelected = i;
         for (let i of devicesArray) {

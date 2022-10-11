@@ -49,7 +49,7 @@ app.get("/capture", function (req, res) {
     for(let deviceData of deviceListener.getDeviceData()){
       console.log(deviceData);
       if(deviceData.name == req.query.name){
-        res.send("<img src=" + deviceData.base64 + "></img>");
+        res.send(deviceData.base64);
       }
     }
   }
