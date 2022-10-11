@@ -1,6 +1,9 @@
 let addNewDevice = document.getElementById("addNewDevice");
 let deleteDevice = document.getElementById("deleteDevice");
 let menuAddDevice = document.getElementById("menuAddDevice");
+let buttonCancelMenuAddDevice = document.getElementById(
+  "buttonCancelMenuAddDevice"
+);
 let buttonConfirmMenuAddNDevice = document.getElementById(
   "buttonConfirmMenuAddDevice"
 );
@@ -76,17 +79,19 @@ async function start() {
       });
 
       let responseJson = await response.json();
-      
-      if(responseJson.return == true){
+
+      if (responseJson.return == true) {
         location.reload();
       }
     });
 
+    buttonCancelMenuAddDevice.addEventListener("click", hideAddDeviceMenu);
+
     deleteDevice.addEventListener("click", async function () {
       let body = {
         deleteDevice: true,
-        device: devicesArray[deviceSelected].configuration
-      }
+        device: devicesArray[deviceSelected].configuration,
+      };
       let response = await fetch("/data", {
         method: "delete",
         headers: {
@@ -97,8 +102,8 @@ async function start() {
       });
 
       let responseJson = await response.json();
-      
-      if(responseJson.return == true){
+
+      if (responseJson.return == true) {
         location.reload();
       }
     });
@@ -128,9 +133,11 @@ async function start() {
 
       devicesArray[i].html.appendChild(tdElement);
 
-      buttonVideo.addEventListener("click", function(){
+      buttonVideo.addEventListener("click", function () {
         let windowVideo = window.open();
-        windowVideo.document.write(`<img src="http://${location.host}/capture?name=${devicesArray[i].configuration.name}"></img>`)
+        windowVideo.document.write(
+          `<img src="http://${location.host}/capture?name=${devicesArray[i].configuration.name}"></img>`
+        );
       });
 
       devicesArray[i].html.addEventListener("click", function () {
