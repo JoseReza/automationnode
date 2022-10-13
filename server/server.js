@@ -3,7 +3,7 @@ const fs = require("fs");
 const deviceListener = require("./deviceListener");
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -47,7 +47,6 @@ app.get("/capture", function (req, res) {
   console.log(req.query);
   if(req.query){
     for(let deviceData of deviceListener.getDeviceData()){
-      console.log(deviceData);
       if(deviceData.name == req.query.name){
         res.send(deviceData.base64);
       }

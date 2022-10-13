@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 const time = require("./time");
 const fs = require("fs");
 
-let intervalListenerDelay = 50;
+let intervalListenerDelay = 200;
 let stop = false;
 let deviceData = [];
 
@@ -23,11 +23,10 @@ async function listenerLoop(devices) {
     let data = undefined;
     if (device.protocol == "tcp/ip") {
 
-      
       try {
-
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 1000);
+        console.log("-->Fetching:", `http://${device.direction}/capture`);
         data = await fetch(`http://${device.direction}/capture`, {
           signal: controller.signal,
         });
@@ -36,13 +35,14 @@ async function listenerLoop(devices) {
         console.error(`-->Not listened: ${JSON.stringify(device)}`);
       }
     }
+    console.log("-->blobData:", data);
 
     let base64 = "";
 
     try {
       data = Buffer.from(await data.arrayBuffer());
+      console.log("-->arrayData:", data);
       data = data.toString("base64");
-      
       base64 = "data:image/png;base64," + data;
       
       newDeviceData.push({

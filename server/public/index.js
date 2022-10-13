@@ -133,11 +133,8 @@ async function start() {
 
       devicesArray[i].html.appendChild(tdElement);
 
-      buttonVideo.addEventListener("click", function () {
-        let windowVideo = window.open();
-        windowVideo.document.write(
-          `<img src="http://${location.host}/capture?name=${devicesArray[i].configuration.name}"></img>`
-        );
+      buttonVideo.addEventListener("click", async function () {
+        window.open(`video.html?name=${devicesArray[i].configuration.name}`);
       });
 
       devicesArray[i].html.addEventListener("click", function () {

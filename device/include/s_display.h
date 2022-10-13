@@ -9,6 +9,7 @@ Adafruit_SSD1306 oled(128, 64, &Wire); // crea objeto
 
 void displayStart()
 {
+  Wire.begin()
   Wire.begin(15, 14);                     // inicializa bus I2C
   oled.begin(SSD1306_SWITCHCAPVCC, 0x3C); // inicializa pantalla con direccion 0x3C
 }
