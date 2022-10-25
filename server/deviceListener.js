@@ -2,72 +2,103 @@ const fetch = require("node-fetch");
 const time = require("./time");
 const fs = require("fs");
 
-let intervalListenerDelay = 200;
+let intervalListenerDelay = 100;
 let stop = false;
-let deviceData = [];
+let deviceClasses = [];
 
-async function startListener(devices) {
-  stop = false;
-  listenerLoop(devices);
-}
+class DeviceClass {
 
-function stopListener() {
-  stop = true;
-}
+  listenig = false;
+  name = "";
+  protocol = "";
+  direction = "";
+  base64 = "";
 
-async function listenerLoop(devices) {
-  
-  let newDeviceData = [];
+  constructor(configuration){
+    this.name = configuration.name;
+    this.protocol = configuration.protocol;
+    this.direction = configuration.direction;
+  }
 
-  for (let device of devices) {
-    let data = undefined;
-    if (device.protocol == "tcp/ip") {
+  async listen(){
+    if(!this.listenig){
+
+      this.listenig = true;
+      let data = undefined;
+      let base64 = this.base64;
 
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1000);
-        console.log("-->Fetching:", `http://${device.direction}/capture`);
-        data = await fetch(`http://${device.direction}/capture`, {
+        setTimeout(() => controller.abort(), 1000);
+        //console.log(`-->  ${this.direction} : Listening`);
+        data = await fetch(`http://${this.direction}/capture`, {
           signal: controller.signal,
         });
         data = await data.blob();
       } catch {
-        console.error(`-->Not listened: ${JSON.stringify(device)}`);
+        console.error(`-->  ${this.direction} : Not listened`);
       }
+
+      try {
+        data = Buffer.from(await data.arrayBuffer());
+        console.log("-->arrayData:", data);
+        data = data.toString("base64");
+        base64 = "data:image/png;base64," + data;
+      } catch (error) {
+        //
+      }
+      this.base64 = base64;
+      this.listenig = false;
     }
-    console.log("-->blobData:", data);
-
-    let base64 = "";
-
-    try {
-      data = Buffer.from(await data.arrayBuffer());
-      console.log("-->arrayData:", data);
-      data = data.toString("base64");
-      base64 = "data:image/png;base64," + data;
-      
-      newDeviceData.push({
-        ...device,
-        base64,
-      });
-
-      deviceData = newDeviceData;
-
-    } catch (error) {
-      console.error(error);
-    }
-
   }
 
-  
+}
+
+
+
+async function startListener(devices) {
+
+  stop = false;
+  for (let configuration of devices) {
+    let deviceInstance = new DeviceClass(configuration);
+    deviceClasses.push(deviceInstance);
+
+  }
+  listenerLoop();
+
+}
+
+async function stopListener() {
+
+  stop = true;
+  await listenerLoop();
+  for(let deviceClass of deviceClasses){
+    delete deviceClass;
+  }
+  deviceClasses = [];
+
+}
+
+async function listenerLoop() {
+
+  for(let deviceClass of deviceClasses){
+    deviceClass.listen();
+  }
 
   if (!stop) {
     await time.wait(intervalListenerDelay);
-    await listenerLoop(devices);
+    await listenerLoop();
   }
+
 }
 
-function getDeviceData(){
-  return deviceData;
+function getDeviceCapture(name){
+  for(let deviceClass of deviceClasses){
+    if(deviceClass.name == name){
+      return deviceClass.base64;
+    }
+  }
+  return undefined;
 }
 
-module.exports = { startListener, stopListener, getDeviceData };
+module.exports = { startListener, stopListener, getDeviceCapture };

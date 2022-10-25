@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap.css">
+    <title>Login</title>
+</head>
+<body class="bg-dark text-white">
+    <div style="text-align: center;" class="bg-primary text-white">
+        <h1>Camera Node</h1>
+        <h2>Please enter yor user and password to access</h2>
+        <br>
+    </div>
+    <br>
+    <div style="text-align: center;">
+        <h2>User:</h2>
+        <input type="text" id="userText">
+        <br>
+        <br>
+        <h2>Password:</h2>
+        <input type="text" id="passwordText">  
+        <br>
+        <br>
+        <button id="confirmButton" class="btn btn-primary">Confirm</button>      
+    </div>
+</body>
+</html>
+<script>
+
+    let userText = document.getElementById("userText");
+    let passwordText = document.getElementById("passwordText");
+    let confirmButton = document.getElementById("confirmButton");
+
+    confirmButton.addEventListener("click", async function(){
+        window.location.href = window.location.origin + `/?name=${userText.value}&password=${btoa(passwordText.value)}`; 
+    });
+
+</script>

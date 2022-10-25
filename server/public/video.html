@@ -45,7 +45,7 @@
                     <div>Automation Node</div>
                 </td>
                 <td style="width: 30%; margin-left: 5%; background-color: #2196f3; border-radius: 10px; color: white; border: #fff solid; vertical-align: middle;">
-                    <h3 id="name">Camera streaming</h3>
+                    <h3 id="deviceName">Camera streaming</h3>
                 </td>
             </tr>
         </table>
@@ -64,15 +64,21 @@
 </html>
 
 <script>
-    let name = document.getElementById("name");
+
+    let url = new URL(location.href);
+    let name = url.searchParams.get('name');
+    let password = url.searchParams.get('password');
+    console.log(name, password);
+
+    let deviceName = document.getElementById("deviceName");
     let video = document.getElementById("video");
     let urlParams = new URLSearchParams(window.location.search);
-    name.innerText = urlParams.get("name");
+    name.innerText = urlParams.get("deviceName");
 
     setInterval(async function () {
-        let response = await fetch(`${location.origin}/capture?name=${urlParams.get("name")}`);
+        let response = await fetch(`${location.origin}/capture?name=${name}&password=${password}&deviceName=${urlParams.get("deviceName")}`);
         response = await response.text();
         console.log(response);
         video.setAttribute("src", response);
-    }, 200);
+    }, 100);
 </script>
