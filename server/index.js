@@ -8,6 +8,10 @@ const port = 3000;
 
 app.use(express.json());
 
+function middleware(){
+
+}
+
 app.get("/", login.check, (req, res) => {
   res.send(
     fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })

@@ -1,16 +1,11 @@
 {
   "devices": [
-    { "name": "camera one", "protocol": "tcp/ip", "direction": "10.104.1.223" },
-    { "name": "camera two", "protocol": "tcp/ip", "direction": "192.168.1.100" }
+    { "name": "camera one", "protocol": "tcp/ip", "direction": "192.168.4.5" },
+    { "name": "camera two", "protocol": "tcp/ip", "direction": "192.168.4.1" }
   ],
   "users": [
-    {
-        "name": "jose",
-        "password": "password"
-    },
-    {
-        "name": "alan",
-        "password": "password"
-    }
+    { "name": "jose", "password": "password" },
+    { "name": "alan", "password": "password" },
+    { "name": "rafael", "password": "password" }
   ]
 }
