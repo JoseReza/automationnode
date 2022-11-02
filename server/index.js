@@ -1,5 +1,7 @@
+const { exec } = require("child_process");
 const express = require("express");
 const fs = require("fs");
+const { platform } = require("os");
 const deviceListener = require("./deviceListener");
 const login = require("./login");
 
@@ -107,4 +109,7 @@ app.listen(port, () => {
   );
   console.log();
   deviceListener.startListener(configurationJson.devices);
+  if(platform() == "win32"){
+    exec(`start msedge http://localhost:${port}`);
+  }
 });
