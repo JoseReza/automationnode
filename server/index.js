@@ -32,7 +32,7 @@ app.get("/configuration.json", login.check, (req, res) => {
 
 app.put("/data", login.check, async (req, res) => {
   console.log(req.body);
-  if (req.body.saveNewDevice == true) {
+  if (req.body.saveNewDevice == true) { //save new device
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/configuration.json", {
         encoding: "utf-8",
@@ -46,6 +46,20 @@ app.put("/data", login.check, async (req, res) => {
     );
     await deviceListener.stopListener();
     await deviceListener.startListener(configurationJson.devices);
+    req.body.return = true;
+  }
+  if (req.body.saveNewUser == true) { //save new user
+    let configurationJson = JSON.parse(
+      fs.readFileSync(__dirname + "/configuration.json", {
+        encoding: "utf-8",
+      })
+    );
+    configurationJson.users.push(req.body.user);
+    fs.writeFileSync(
+      __dirname + "/configuration.json",
+      JSON.stringify(configurationJson),
+      { encoding: "utf-8" }
+    );
     req.body.return = true;
   }
   res.send(req.body);

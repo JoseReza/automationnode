@@ -1,217 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bootstrap.css">
-    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
+<html lang="en" style="width: 100%; height: 95%">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="shortcut icon" href="icon.png" type="image/x-icon" />
     <title>Management Device Server</title>
-</head>
-<body>
+    <style>
+      button:hover {
+        background-color: #fff;
+        color: #000;
+      }
 
-    <div style="height: 20%; background-color: black;">
-        <div style="text-align: center;" class="bg-primary text-white">
-            <h2>Management device server</h2>
-        </div>
-        <div style="text-align: center;">
-            <button id="addNewDevice" class="btn btn-primary btn-sm">Add</button>
-            <button id="deleteDevice" class="btn btn-danger btn-sm">Delete</button>
-        </div>
-        <div id="menuAddDevice" style="visibility: hidden; position: absolute;">
-            <div class="text-white" style="text-align: center; align-items: center;">
-                <br>
-                    <table style="width: 50%; margin-left: 25%; border-radius: 10px; padding: 5%;" class="bg-primary">
-                        <tr>
-                        <div>
-                            <td>
-                                <label>Name:</label>
-                            </td>
-                            <td>
-                                <input id="addNewDeviceMenuName" type="text" placeholder="deviceName">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>Protocol:</label>
-                            </td>
-                            <td>
-                                <select id="addNewDeviceMenuSelectProtocol" name="protocol" style="width: 20%; text-align:center;">
-                                    <option value="tcp/ip" selected>tcp/ip</option>
-                                    <option value="serial">serial</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>Direction:</label>
-                            </td>
-                            <td id="divMenuSelectProtocol">
-                                <div>
-                                    <input type="number" id="addNewDeviceMenuIp0" style="width: 20%;" value="192">.
-                                    <input type="number" id="addNewDeviceMenuIp1" style="width: 20%;" value="168">.
-                                    <input type="number" id="addNewDeviceMenuIp2" style="width: 20%;" value="4">.
-                                    <input type="number" id="addNewDeviceMenuIp3" style="width: 20%;" value="1">
-                                </div>
-                                <div style="visibility: hidden;">
-                                    <select id="addNewDeviceMenuSelectPort" name="protocol" style="width: 20%; text-align:center;">
-                                        <option value="COM1">COM1</option>
-                                        <option value="COM2">COM2</option>
-                                    </select>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <button id="buttonCancelMenuAddDevice" class="btn btn-danger btn-sm">Cancel</button>
-                    <button id="buttonConfirmMenuAddDevice" class="btn btn-primary btn-sm">Confirm</button>
-                </div>
-        </div>
-        <br>
+      #logo {
+        position: relative;
+        animation-name: animationLogo;
+        animation-duration: 10s;
+        animation-iteration-count: infinite;
+      }
+
+      body {
+        overflow-y: hidden;
+        height: 100%;
+        background-color: #000;
+      }
+
+      @keyframes animationLogo {
+        0% {
+          transform: rotate(0deg);
+        }
+        33% {
+          transform: rotate(120deg);
+        }
+        66% {
+          transform: rotate(240deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div style="align-items: center; text-align: center" class="bg-dark">
+      <br />
+      <div
+        class="bg-secondary"
+        style="border-radius: 10px; width: 15%; margin-left: 5%; float: left"
+      >
+        <img id="logo" src="./icon.png" style="padding: 1%; width: 30%" />
+        <h4>Automation Node</h4>
+      </div>
+      <div
+        class="bg-secondary"
+        style="border-radius: 10px; width: 38%; margin-left: 7.5%; float: left"
+      >
+        <h2 style="padding: 3%">Management device server</h2>
+      </div>
+      <div style="clear: both"></div>
+      <br />
+      <br />
     </div>
 
-        <table id="devicesList" class="table table-hover" style="text-align: center;">
-            <tr>
-                <th class="bg-primary" style="color: white;">
-                    Name
-                </th>
-                <th class="bg-primary" style="color: white;">
-                    Protocol
-                </th>
-                <th class="bg-primary" style="color: white;">
-                    Direction
-                </th>
-                <th class="bg-primary" style="color: white;">
-                    Video
-                </th>
-            </tr>
-        </table> 
+    <div style="height: 90%">
+      <div
+        style="
+          align-items: center;
+          text-align: center;
+          width: 25%;
+          float: left;
+          height: 100%;
+        "
+        class="bg-dark"
+      >
+        <div style="text-align: center">
+          <div
+            style="margin: 5%; padding: 3%; border-radius: 10px"
+            class="bg-primary text-white"
+          >
+            <h4 style="border-radius: 10px" class="bg-dark">Session</h4>
+            <div class="bg-dark text-white" style="border-radius: 10px">
+              <div style="padding: 3%">
+                Logged as <span id="userNameText"></span>
+              </div>
+            </div>
+            <br />
+            <button id="closeSession" class="btn btn-secondary btn-sm">
+              Close
+            </button>
+          </div>
+          <div
+            style="margin: 5%; padding: 3%; border-radius: 10px"
+            class="bg-primary text-white"
+          >
+            <h4 style="border-radius: 10px" class="bg-dark">Device</h4>
+            <button id="addNewDevice" class="btn btn-secondary btn-sm">
+              Add
+            </button>
+            <button id="deleteDevice" class="btn btn-secondary btn-sm">
+              Delete
+            </button>
+          </div>
+          <div
+            style="margin: 5%; padding: 3%; border-radius: 10px"
+            class="bg-primary text-white"
+          >
+            <h4 style="border-radius: 10px" class="bg-dark">User</h4>
+            <button id="addUser" class="btn btn-secondary btn-sm">Add</button>
+          </div>
+          <br />
+        </div>
+        <br />
+      </div>
 
-    </body>
-    </html>
-    <script>
+      <div
+        style="background-color: white; float: left; width: 75%; height: 100%"
+      >
+        <table
+          id="devicesList"
+          class="table table-hover"
+          style="text-align: center"
+        >
+          <tr>
+            <th class="bg-primary" style="color: white">Name</th>
+            <th class="bg-primary" style="color: white">Protocol</th>
+            <th class="bg-primary" style="color: white">Direction</th>
+            <th class="bg-primary" style="color: white">Video</th>
+          </tr>
+        </table>
+      </div>
+    </div>
 
-    let url = new URL(location.href);
-    let name = url.searchParams.get('name');
-    let password = url.searchParams.get('password');
-    console.log(name, password);
+    <div style="clear: both"></div>
+  </body>
+</html>
+<script>
+  let url = new URL(location.href);
+  let name = url.searchParams.get("name");
+  let password = url.searchParams.get("password");
+  console.log(name, password);
 
-    let addNewDevice = document.getElementById("addNewDevice");
-    let deleteDevice = document.getElementById("deleteDevice");
-    let menuAddDevice = document.getElementById("menuAddDevice");
-    let buttonCancelMenuAddDevice = document.getElementById(
-    "buttonCancelMenuAddDevice"
+  let addNewDevice = document.getElementById("addNewDevice");
+  let closeSession = document.getElementById("closeSession");
+  let userNameText = document.getElementById("userNameText");
+
+  userNameText.innerHTML = name;
+
+  closeSession.addEventListener("click", function () {
+    if (confirm("Are you secure of close session?")) {
+      location.replace("/");
+    }
+  });
+
+  let devicesArray = [];
+  let deviceSelected = 0;
+  let devicesList = document.getElementById("devicesList");
+
+  async function start() {
+    let responseString = await fetch(
+      `/configuration.json?name=${name}&password=${password}`
     );
-    let buttonConfirmMenuAddNDevice = document.getElementById(
-    "buttonConfirmMenuAddDevice"
-    );
-
-    let addNewDeviceMenuName = document.getElementById("addNewDeviceMenuName");
-    let addNewDeviceMenuSelectProtocol = document.getElementById(
-    "addNewDeviceMenuSelectProtocol"
-    );
-    let divMenuSelectProtocol = document.getElementById("divMenuSelectProtocol");
-    let addNewDeviceMenuIp0 = document.getElementById("addNewDeviceMenuIp0");
-    let addNewDeviceMenuIp1 = document.getElementById("addNewDeviceMenuIp1");
-    let addNewDeviceMenuIp2 = document.getElementById("addNewDeviceMenuIp2");
-    let addNewDeviceMenuIp3 = document.getElementById("addNewDeviceMenuIp3");
-    let addNewDeviceMenuSelectPort = document.getElementById(
-    "addNewDeviceMenuSelectPort"
-    );
-
-    let devicesArray = [];
-    let deviceSelected = 0;
-    let devicesList = document.getElementById("devicesList");
-
-    async function start() {
-    let responseString = await fetch(`/configuration.json?name=${name}&password=${password}`);
     let responseJson = await responseString.json();
     console.log(responseJson);
 
     if (responseJson) {
-        addNewDevice.addEventListener("click", function () {
-        showAddDeviceMenu();
-        });
-
-        addNewDeviceMenuSelectProtocol.addEventListener("change", function () {
-        let indexSelected = 0;
-        for (let i in addNewDeviceMenuSelectProtocol.children) {
-            if (
-            addNewDeviceMenuSelectProtocol.children[i].value ==
-            addNewDeviceMenuSelectProtocol.value
-            ) {
-            indexSelected = i;
-            }
-        }
-        for (let i in divMenuSelectProtocol.children) {
-            divMenuSelectProtocol.children[i].style.visibility = "hidden";
-            if (i == indexSelected) {
-            divMenuSelectProtocol.children[i].style.visibility = "visible";
-            }
-        }
-        });
-
-        buttonConfirmMenuAddNDevice.addEventListener("click", async function () {
-        let body = {
-            saveNewDevice: true,
-            device: {
-            name: addNewDeviceMenuName.value,
-            protocol: addNewDeviceMenuSelectProtocol.value,
-            direction: "",
-            },
-        };
-
-        if (addNewDeviceMenuSelectProtocol.value == "tcp/ip") {
-            body.device.direction = `${addNewDeviceMenuIp0.value}.${addNewDeviceMenuIp1.value}.${addNewDeviceMenuIp2.value}.${addNewDeviceMenuIp3.value}`;
-        } else if (addNewDeviceMenuSelectProtocol.value == "serial") {
-            body.device.direction = addNewDeviceMenuSelectPort.value;
-        }
-
-        let response = await fetch(`/data?name=${name}&password=${password}`, {
-            method: "put",
-            headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-        });
-
-        let responseJson = await response.json();
-
-        if (responseJson.return == true) {
+      addNewDevice.addEventListener("click", function () {
+        let thisWindow = window.open(
+          `addDevice.html?name=${name}&password=${password}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
             location.reload();
-        }
-        });
+          }
+        }, 1000);
+      });
 
-        buttonCancelMenuAddDevice.addEventListener("click", hideAddDeviceMenu);
+      addUser.addEventListener("click", async function () {
+        let thisWindow = window.open(
+          `addUser.html?name=${name}&password=${password}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
+            location.reload();
+          }
+        }, 1000);
+      });
 
-        deleteDevice.addEventListener("click", async function () {
-        let body = {
+      deleteDevice.addEventListener("click", async function () {
+        if (
+          confirm(
+            `Are you secure of delete "${devicesArray[deviceSelected].configuration.name}" device`
+          )
+        ) {
+          let body = {
             deleteDevice: true,
             device: devicesArray[deviceSelected].configuration,
-        };
-        let response = await fetch(`/data?name=${name}&password=${password}`, {
-            method: "delete",
-            headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-        });
+          };
+          let response = await fetch(
+            `/data?name=${name}&password=${password}`,
+            {
+              method: "delete",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            }
+          );
 
-        let responseJson = await response.json();
+          let responseJson = await response.json();
 
-        if (responseJson.return == true) {
+          if (responseJson.return == true) {
             location.reload();
+          }
         }
-        });
+      });
 
-        for (let i in responseJson.devices) {
+      for (let i in responseJson.devices) {
         let deviceHtml = document.createElement("tr");
 
         devicesArray.push({
-            configuration: responseJson.devices[i],
-            html: deviceHtml,
+          configuration: responseJson.devices[i],
+          html: deviceHtml,
         });
 
         devicesArray[i].html.classList.add("table-primary");
@@ -232,40 +245,36 @@
         devicesArray[i].html.appendChild(tdElement);
 
         buttonVideo.addEventListener("click", async function () {
-            window.open(`video.html?deviceName=${devicesArray[i].configuration.name}&name=${name}&password=${password}`);
+          let thisWindow = window.open(
+            `video.html?deviceName=${devicesArray[i].configuration.name}&name=${name}&password=${password}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
         });
 
         devicesArray[i].html.addEventListener("click", function () {
-            deviceSelected = i;
-            for (let i of devicesArray) {
+          deviceSelected = i;
+          for (let i of devicesArray) {
             i.html.classList.remove("bg-primary");
             i.html.classList.remove("text-white");
-            }
-            devicesArray[i].html.classList.add("bg-primary");
-            devicesArray[i].html.classList.add("text-white");
-            console.log(deviceSelected);
+          }
+          devicesArray[i].html.classList.add("bg-primary");
+          devicesArray[i].html.classList.add("text-white");
+          console.log(deviceSelected);
         });
 
         devicesList.appendChild(deviceHtml);
-        }
-        devicesArray[0].html.classList.add("bg-primary");
-        devicesArray[0].html.classList.add("text-white");
-        console.log(devicesArray);
+      }
+      devicesArray[0].html.classList.add("bg-primary");
+      devicesArray[0].html.classList.add("text-white");
+      console.log(devicesArray);
     } else {
-        console.error("recurso no encontrado");
+      console.error("recurso no encontrado");
     }
-    }
-    start();
-
-    function showAddDeviceMenu() {
-    menuAddDevice.style.visibility = "visible";
-    menuAddDevice.style.position = "relative";
-    }
-
-    function hideAddDeviceMenu() {
-    menuAddDevice.style.visibility = "hidden";
-    menuAddDevice.style.position = "absolute";
-    }
-
-
-    </script>
+  }
+  start();
+</script>
