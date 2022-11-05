@@ -15,7 +15,7 @@ function check(req, res, next) {
       }
       if (
         req.query.name == user.name &&
-        req.query.password == btoa(user.password)
+        req.query.password == user.password
       ) {
         authenticated = true;
         console.log("-->Logged: ", user.name);
