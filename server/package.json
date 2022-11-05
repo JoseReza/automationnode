@@ -7,9 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "author": "Jose Soto Reza",
+  "author": "Jose Soto Reza and Alan Nevarez Zamora",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "node-fetch": "^2.6.1",
     "serialport": "^10.4.0"

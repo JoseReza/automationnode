@@ -2,11 +2,13 @@ const { exec } = require("child_process");
 const express = require("express");
 const fs = require("fs");
 const { platform } = require("os");
+const dotenv = require("dotenv");
 const deviceListener = require("./deviceListener");
 const login = require("./login");
 
 var app = express();
 const port = 3000;
+dotenv.config();
 
 app.use(express.json());
 
@@ -111,5 +113,12 @@ app.listen(port, () => {
   deviceListener.startListener(configurationJson.devices);
   if(platform() == "win32"){
     exec(`start msedge --kiosk http://localhost:${port} --edge-kiosk-type=fullscreen`);
+  }
+  if(platform() == "linux"){
+    if(process.env.PRODUCTION){
+      exec(`chromium-browser http://localhost:${port} --kiosk`);
+    }else{
+      exec(`chromium-browser http://localhost:${port}`);
+    }
   }
 });
