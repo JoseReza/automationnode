@@ -110,6 +110,6 @@ app.listen(port, () => {
   console.log();
   deviceListener.startListener(configurationJson.devices);
   if(platform() == "win32"){
-    exec(`start msedge http://localhost:${port}`);
+    exec(`start msedge --kiosk http://localhost:${port} --edge-kiosk-type=fullscreen`);
   }
 });
