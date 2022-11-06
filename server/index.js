@@ -12,9 +12,7 @@ dotenv.config();
 
 app.use(express.json());
 
-function middleware(){
-
-}
+function middleware() {}
 
 app.get("/", login.check, (req, res) => {
   res.send(
@@ -36,7 +34,8 @@ app.get("/configuration.json", login.check, (req, res) => {
 
 app.put("/data", login.check, async (req, res) => {
   console.log(req.body);
-  if (req.body.saveNewDevice == true) { //save new device
+  if (req.body.saveNewDevice == true) {
+    //save new device
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/configuration.json", {
         encoding: "utf-8",
@@ -52,7 +51,8 @@ app.put("/data", login.check, async (req, res) => {
     await deviceListener.startListener(configurationJson.devices);
     req.body.return = true;
   }
-  if (req.body.saveNewUser == true) { //save new user
+  if (req.body.saveNewUser == true) {
+    //save new user
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/configuration.json", {
         encoding: "utf-8",
@@ -111,13 +111,21 @@ app.listen(port, () => {
   );
   console.log();
   deviceListener.startListener(configurationJson.devices);
-  if(platform() == "win32"){
-    exec(`start msedge --kiosk http://localhost:${port} --edge-kiosk-type=fullscreen`);
+  if (platform() == "win32") {
+    if (process.env.PRODUCTION == "true") {
+      exec(
+        `start msedge --kiosk http://localhost:${port} --edge-kiosk-type=fullscreen`
+      );
+    } else {
+      exec(
+        `start msedge http://localhost:${port}`
+      );
+    }
   }
-  if(platform() == "linux"){
-    if(process.env.PRODUCTION){
+  if (platform() == "linux") {
+    if (process.env.PRODUCTION == "true") {
       exec(`chromium-browser http://localhost:${port} --kiosk`);
-    }else{
+    } else {
       exec(`chromium-browser http://localhost:${port}`);
     }
   }
