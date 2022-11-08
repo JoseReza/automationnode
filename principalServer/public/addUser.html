@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="icon" href="./icon.png" />
+    <title>Add user</title>
+  </head>
+  <body class="bg-dark">
+    <div
+      style="
+        text-align: center;
+        width: 60%;
+        margin-left: 20%;
+        border-radius: 10px;
+        margin-top: 5%;
+      "
+      class="bg-primary text-white"
+    >
+      <br />
+      <h2
+        class="bg-dark"
+        style="border-radius: 10px; width: 70%; margin-left: 15%"
+      >
+        Please enter the new user and password
+      </h2>
+      <br />
+      <h4
+        style="
+          border-radius: 10px;
+          color: white;
+          border-radius: 10px;
+          width: 60%;
+          margin-left: 20%;
+        "
+        class="bg-dark"
+      >
+        New user:
+      </h4>
+      <input type="text" id="userText" placeholder="user" />
+      <br />
+      <br />
+      <h4
+        style="
+          border-radius: 10px;
+          color: white;
+          border-radius: 10px;
+          width: 60%;
+          margin-left: 20%;
+        "
+        class="bg-dark"
+      >
+        New password:
+      </h4>
+      <input type="text" id="passwordText" placeholder="password" />
+      <br />
+      <br />
+      <button id="addButton" class="btn btn-secondary btn-sm">Add user</button>
+      <button id="buttonCancel" class="btn btn-primary btn-sm">
+        Cancel
+      </button>
+      <br />
+      <br />
+    </div>
+  </body>
+</html>
+<script>
+  let url = new URL(location.href);
+  let name = url.searchParams.get("name");
+  let password = url.searchParams.get("password");
+  console.log(name, password);
+
+  let userText = document.getElementById("userText");
+  let passwordText = document.getElementById("passwordText");
+  let addButton = document.getElementById("addButton");
+  let buttonCancel = document.getElementById("buttonCancel");
+
+  buttonCancel.addEventListener("click", function(){
+    window.close();
+  });
+
+  addButton.addEventListener("click", async function () {
+    if (userText.value != "" && passwordText != "") {
+      let body = {
+        saveNewUser: true,
+        user: {
+          name: userText.value,
+          password: passwordText.value,
+        },
+      };
+
+      let response = await fetch(`/data?name=${name}&password=${password}`, {
+        method: "put",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      let responseJson = await response.json();
+
+      if (responseJson.return == true) {
+        alert(`User ${userText.value} added succesfully`);
+        window.close();
+      }
+    } else {
+      if (userText.value == "") {
+        alert("Please put something in user value");
+      }
+      if (passwordText.value == "") {
+        alert("Please put something in password value");
+      }
+    }
+  });
+</script>

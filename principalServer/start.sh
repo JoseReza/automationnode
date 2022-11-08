@@ -1,0 +1,1 @@
+sudo /usr/bin/lxterminal --command="npm run start" --working-directory="/home/pi/Desktop/labVirtual/principalServer"
