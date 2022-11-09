@@ -3,7 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const { platform } = require("os");
 const dotenv = require("dotenv");
-const deviceListener = require("./deviceListener");
+const deviceRouter = require("./deviceRouter");
 const login = require("./login");
 
 var app = express();
@@ -45,8 +45,6 @@ app.put("/data", login.check, async (req, res) => {
       JSON.stringify(configurationJson),
       { encoding: "utf-8" }
     );
-    await deviceListener.stopListener();
-    await deviceListener.startListener(configurationJson.devices);
     req.body.return = true;
   }
   if (req.body.saveNewUser == true) {
@@ -56,6 +54,12 @@ app.put("/data", login.check, async (req, res) => {
         encoding: "utf-8",
       })
     );
+    for(let _user of configurationJson.users){
+      if(_user.name == req.body.user.name){
+        res.send({ return: false, data: 0});
+        return;
+      }
+    }
     configurationJson.users.push(req.body.user);
     fs.writeFileSync(
       __dirname + "/configuration.json",
@@ -85,19 +89,30 @@ app.delete("/data", login.check, async (req, res) => {
       JSON.stringify(configurationJson),
       { encoding: "utf-8" }
     );
-    await deviceListener.stopListener();
-    await deviceListener.startListener(configurationJson.devices);
+    req.body.return = true;
+  }
+  if (req.body.deleteUser == true) {
+    let configurationJson = JSON.parse(
+      fs.readFileSync(__dirname + "/configuration.json", {
+        encoding: "utf-8",
+      })
+    );
+    for (let index in configurationJson.users) {
+      if (req.body.user.name == configurationJson.users[index].name) {
+        configurationJson.users.splice(index, 1);
+      }
+    }
+    fs.writeFileSync(
+      __dirname + "/configuration.json",
+      JSON.stringify(configurationJson),
+      { encoding: "utf-8" }
+    );
     req.body.return = true;
   }
   res.send(req.body);
 });
 
-app.get("/capture", login.check, (req, res) => {
-  if (req.query) {
-    res.send(deviceListener.getDeviceCapture(req.query.deviceName));
-  }
-});
-
+app = deviceRouter.start(app);
 app.use(express.static("public"));
 
 app.listen(port, () => {
@@ -107,8 +122,6 @@ app.listen(port, () => {
       encoding: "utf-8",
     })
   );
-  console.log();
-  deviceListener.startListener(configurationJson.devices);
   if (platform() == "win32") {
     if (process.env.PRODUCTION == "true") {
       exec(

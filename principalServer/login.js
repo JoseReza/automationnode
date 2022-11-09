@@ -1,21 +1,21 @@
 const fs = require("fs");
 
 function check(req, res, next) {
-  
-  if (req.query.name != undefined && req.query.password != undefined) {
+  if (req.query.user) {
+    let user = JSON.parse(req.query.user)
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/configuration.json", {
         encoding: "utf-8",
       })
     );
     let authenticated = false;
-    for (let user of configurationJson.users) {
+    for (let _user of configurationJson.users) {
       if (authenticated) {
         continue;
       }
       if (
-        req.query.name == user.name &&
-        req.query.password == user.password
+        user.name == _user.name &&
+        user.password == _user.password
       ) {
         authenticated = true;
         next();

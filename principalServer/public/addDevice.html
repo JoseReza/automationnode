@@ -38,6 +38,21 @@
           <br />
           <br />
           <div class="bg-dark text-white" style="border-radius: 10px">
+            Type:
+          </div>
+          <br />
+          <select
+            id="addNewDeviceMenuSelectType"
+            name="type"
+            style="width: 20%; text-align: center"
+          >
+            <option value="camera" selected>camera</option>
+            <option value="fpga">fpga</option>
+            <option value="fpga">mcu</option>
+          </select>
+          <br />
+          <br />
+          <div class="bg-dark text-white" style="border-radius: 10px">
             Protocol:
           </div>
           <br />
@@ -126,6 +141,9 @@
   );
 
   let addNewDeviceMenuName = document.getElementById("addNewDeviceMenuName");
+
+  let addNewDeviceMenuSelectType = document.getElementById("addNewDeviceMenuSelectType");
+
   let addNewDeviceMenuSelectProtocol = document.getElementById(
     "addNewDeviceMenuSelectProtocol"
   );
@@ -162,6 +180,7 @@
         saveNewDevice: true,
         device: {
           name: addNewDeviceMenuName.value,
+          type: addNewDeviceMenuSelectType.value,
           protocol: addNewDeviceMenuSelectProtocol.value,
           direction: "",
         },

@@ -68,7 +68,7 @@
 </html>
 <script>
   let url = new URL(location.href);
-  let name = url.searchParams.get("name");
+  let user = JSON.parse(url.searchParams.get("user"));
   let password = url.searchParams.get("password");
   console.log(name, password);
 
@@ -91,7 +91,7 @@
         },
       };
 
-      let response = await fetch(`/data?name=${name}&password=${password}`, {
+      let response = await fetch(`/data?user=${JSON.stringify(user)}`, {
         method: "put",
         headers: {
           Accept: "application/json",
@@ -101,10 +101,15 @@
       });
 
       let responseJson = await response.json();
+      console.log(responseJson);
 
       if (responseJson.return == true) {
         alert(`User ${userText.value} added succesfully`);
         window.close();
+      }else{
+        if(responseJson.data == 0){ 
+          alert("User name already exists, please put another");
+        }
       }
     } else {
       if (userText.value == "") {

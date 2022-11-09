@@ -70,7 +70,11 @@
     let confirmButton = document.getElementById("confirmButton");
 
     confirmButton.addEventListener("click", async function(){
-        window.location.href = window.location.origin + `/?name=${userText.value}&password=${passwordText.value}`; 
+        let user = {
+            name: userText.value,
+            password: passwordText.value
+        }
+        window.location.href = window.location.origin + `/?user=${JSON.stringify(user)}`; 
     });
 
 </script>
