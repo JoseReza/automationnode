@@ -23,7 +23,7 @@ function start(app){
             data = await data.blob();
           } catch {
             console.error(`-->  ${device.direction} : Not listened`);
-            res.send({ return: false});
+            res.send({ return: false, data: "Device not connected"});
             return;
           }
     
@@ -34,14 +34,14 @@ function start(app){
             base64 = "data:image/png;base64," + data;
           } catch (error) {
             //console.error(error);
-            res.send({ return: false});
+            res.send({ return: false, data: "Device not connected"});
             return
           }
       
           res.send({data: base64, return: true});
           return
         }catch{
-          res.send({ return: false});
+          res.send({ return: false, data: "Device not connected"});
           return
         }
     }
