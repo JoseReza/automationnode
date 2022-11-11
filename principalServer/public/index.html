@@ -203,6 +203,7 @@
   
   
   let addUser = document.getElementById("addUser");
+  let addNewTemplate = document.getElementById("addNewTemplate");
   let deleteUser = document.getElementById("deleteUser");
   let closeSession = document.getElementById("closeSession");
   let userNameText = document.getElementById("userNameText");
@@ -271,6 +272,18 @@
       addUser.addEventListener("click", async function () {
         let thisWindow = window.open(
           `addUser.html?user=${JSON.stringify(user)}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
+            location.reload();
+          }
+        }, 1000);
+      });
+
+      addNewTemplate.addEventListener("click", async function () {
+        let thisWindow = window.open(
+          `addTemplate.html?user=${JSON.stringify(user)}`
         );
         let thisInterval = setInterval(function () {
           if (thisWindow.closed) {
@@ -356,16 +369,21 @@
         devicesArray[i].html.appendChild(tdElementAccess);
 
         buttonGo.addEventListener("click", async function () {
-          let thisWindow = window.open(
-            `devices/camera.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`
-          );
-          let thisInterval = setInterval(function () {
-            if (thisWindow.closed) {
-              clearInterval(thisInterval);
-              location.reload();
-            }
-          }, 1000);
+          let interfaceHtml = `index.html?user=${JSON.stringify(user)}`;
+          switch (devicesArray[i].configuration.type){
+            case "camera":
+              interfaceHtml = `devices/camera.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+            case "fpga":
+              interfaceHtml = `devices/fpga.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+            case "mcu":
+              interfaceHtml = `devices/mcu.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+          }
+          window.open(interfaceHtml);
         });
+        
 
         let tdElementOptions = document.createElement("td");
         
@@ -438,7 +456,7 @@
                                     </th>
                                     <td>
                                       <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
-                                          ${templatesArray[i].configuration.endpoint}
+                                          ${location.origin}/templates/${templatesArray[i].configuration.endpoint}.html
                                       </div>
                                     </td>
                         `;
@@ -454,15 +472,9 @@
         templatesArray[i].html.appendChild(tdElementAccess);
 
         buttonGo.addEventListener("click", async function () {
-          let thisWindow = window.open(
-            `devices/camera.html?deviceName=${templatesArray[i].configuration.name}&user=${JSON.stringify(user)}`
+          window.open(
+            `templates/${templatesArray[i].configuration.endpoint}.html`
           );
-          let thisInterval = setInterval(function () {
-            if (thisWindow.closed) {
-              clearInterval(thisInterval);
-              location.reload();
-            }
-          }, 1000);
         });
 
 
@@ -491,8 +503,8 @@
           )
         ) { 
           let body = {
-            deleteDevice: true,
-            device: templatesArray[i].configuration,
+            deleteTemplate: true,
+            template: templatesArray[i].configuration,
           };
           let response = await fetch(
             `/data?user=${JSON.stringify(user)}`,

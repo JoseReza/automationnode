@@ -125,12 +125,8 @@
 </html>
 <script>
   let url = new URL(location.href);
-  let name = url.searchParams.get("name");
-  let password = url.searchParams.get("password");
-  console.log(name, password);
-
-  let deleteDevice = document.getElementById("deleteDevice");
-  let addUser = document.getElementById("addUser");
+  let user = JSON.parse(url.searchParams.get("user"));
+  console.log(user);
 
   let buttonCancelMenuAddDevice = document.getElementById(
     "buttonCancelMenuAddDevice"
@@ -194,7 +190,7 @@
 
       console.log(body);
 
-      let response = await fetch(`/data?name=${name}&password=${password}`, {
+      let response = await fetch(`/data?user=${JSON.stringify(user)}`, {
         method: "put",
         headers: {
           Accept: "application/json",
