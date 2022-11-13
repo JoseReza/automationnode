@@ -8,25 +8,32 @@ function start(app){
   app.get("/camera", login.check, async (req, res) => {
     console.log("camera endpoint")
     if (req.query) {
+
+        let device = JSON.parse(req.query.device);
+        console.log("llega aqui -1")
+
         try{
-          let device = JSON.parse(req.query.device);
-          console.log(device);
           let data = undefined;
           let base64 = undefined;
-    
+          console.log("llega aqui 0")
+
           try {
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 1000);
-            data = await fetch(`http://${device.direction}/capture`, {
-              signal: controller.signal,
-            });
+            console.log("llega aqui 0.5")
+            console.log("llega aqui 0.75")
+            console.log("llega aqui 1")
+            data = await fetch(`http://${device.direction}/capture`);
+            console.log("llega aqui 2")
             data = await data.blob();
+            console.log(data);
+            console.log("llega aqui 3")
           } catch {
             console.error(`-->  ${device.direction} : Not listened`);
             res.send({ return: false, data: "Device not connected"});
             return;
           }
     
+          console.log("llega aqui 4")
+
           try {
             data = Buffer.from(await data.arrayBuffer());
             console.log("-->arrayData:", data);
