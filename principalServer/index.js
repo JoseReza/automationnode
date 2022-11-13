@@ -86,6 +86,11 @@ app.put("/data", login.check, async (req, res) => {
         name: req.body.template.name,
         endpoint: req.body.template.name,
       });
+      fs.writeFileSync(
+        __dirname + "/public/templates/" + req.body.template.name + ".content.html",
+        req.body.template.content,
+        { encoding: "utf-8" }
+      );
       let templateBase = `
     <!DOCTYPE html>
     <html lang="en">
@@ -102,6 +107,84 @@ app.put("/data", login.check, async (req, res) => {
       </body>
     </html>
     `;
+      fs.writeFileSync(
+        __dirname + "/public/templates/" + req.body.template.name + ".html",
+        templateBase,
+        { encoding: "utf-8" }
+      );
+      fs.writeFileSync(
+        __dirname + "/configuration.json",
+        JSON.stringify(configurationJson),
+        { encoding: "utf-8" }
+      );
+      req.body.return = true;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  res.send(req.body);
+});
+
+app.post("/data", login.check, async (req, res) => {
+  try {
+    console.log(req.body);
+    if (req.body.updateDevice == true) {
+      //update device
+      let configurationJson = JSON.parse(
+        fs.readFileSync(__dirname + "/configuration.json", {
+          encoding: "utf-8",
+        })
+      );
+      for (let index in configurationJson.devices) {
+        if (req.body.device.name == configurationJson.devices[index].name) {
+          configurationJson.devices.splice(index, 1);
+          configurationJson.devices.push(req.body.device);
+        }
+      }
+      fs.writeFileSync(
+        __dirname + "/configuration.json",
+        JSON.stringify(configurationJson),
+        { encoding: "utf-8" }
+      );
+      req.body.return = true;
+    }
+    if (req.body.updateUser == true) {
+      //update user
+    }
+    if (req.body.updateTemplate == true) {
+      //update template
+      let configurationJson = JSON.parse(
+        fs.readFileSync(__dirname + "/configuration.json", {
+          encoding: "utf-8",
+        })
+      );
+      for (let index in configurationJson.templates) {
+        if (req.body.template.name == configurationJson.templates[index].name) {
+          configurationJson.templates.splice(index, 1);
+          configurationJson.templates.push(req.body.template);
+        }
+      }
+      fs.writeFileSync(
+        __dirname + "/public/templates/" + req.body.template.name + ".content.html",
+        req.body.content,
+        { encoding: "utf-8" }
+      );
+      let templateBase = `
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link rel="stylesheet" href="bootstrap.css" />
+          <link rel="icon" href="./../icon.png" />
+          <title>${req.body.template.name}</title>
+        </head>
+        <body>
+        ${req.body.content}
+        </body>
+      </html>
+      `;
       fs.writeFileSync(
         __dirname + "/public/templates/" + req.body.template.name + ".html",
         templateBase,

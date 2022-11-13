@@ -1,2 +1,0 @@
-sudo nano /home/pi/.bashrc
-put "path"/start.sh

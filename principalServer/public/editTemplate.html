@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="icon" href="./icon.png" />
+    <title>Add user</title>
+  </head>
+  <body class="bg-dark">
+    <div
+      style="
+        text-align: center;
+        width: 90%;
+        margin-left: 5%;
+        border-radius: 10px;
+        margin-top: 5%;
+      "
+      class="bg-success text-white"
+    >
+      <br />
+      <h2
+        class="bg-dark"
+        style="border-radius: 10px; width: 40%; margin-left: 30%"
+      >
+        Template
+      </h2>
+      <br />
+      <h4
+        style="
+          margin-left: 5%;
+          color: white;
+          width: 30%;
+          float: left;
+        "
+        class="bg-dark"
+      >
+        Name:
+    </h4>
+      <input type="text" id="templateName" placeholder="template name" style="float: left; width: 60%;" />
+      <div style="clear: both;"></div>
+      <div
+        id="codeEditor"
+        style="
+          position: relative;
+          width: 45%;
+          margin-left: 5%;
+          height: 35rem;
+          border: 1px;
+          float: left;
+        "
+      ></div>
+      <div id="codeEditorResult" style="float: left; width: 45%; height: 35rem; text-align: left;" class="bg-white text-dark"></div>
+      <div style="clear: both;"></div>
+      <br />
+      <br />
+      <button id="buttonCancel" class="btn btn-secondary btn-sm">Cancel</button>
+      <button id="addButton" class="btn btn-primary btn-sm">Update template</button>
+      <br />
+      <br />
+    </div>
+  </body>
+</html>
+<script src="./aceEditor/ace.js"></script>
+<script src="./aceEditor/mode-html.js"></script>
+<script src="./aceEditor/theme-chrome.js"></script>
+<script src="./aceEditor/ext-language_tools.js"></script>
+<script>
+  var codeEditor = ace.edit("codeEditor");
+  codeEditor.setTheme("ace/theme/chrome");
+  codeEditor.session.setMode("ace/mode/html");
+  codeEditor.setOptions({
+    fontSize: "12pt",
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+  });
+
+  
+  let url = new URL(location.href);
+  let user = JSON.parse(url.searchParams.get("user"));
+  let template = undefined;
+  try{
+    template = JSON.parse(url.searchParams.get("template"));
+  }catch{
+    document.body.innerHTML = `
+    <div style="text-align: center;">
+        <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
+    </div>
+        `;
+  }
+  let templateName = document.getElementById("templateName");
+  let codeEditorResult = document.getElementById("codeEditorResult");
+  let addButton = document.getElementById("addButton");
+  let buttonCancel = document.getElementById("buttonCancel");
+
+  codeEditor.setValue("<h1>hello world!!</h1>");
+  codeEditorResult.innerHTML = codeEditor.getValue();
+
+  codeEditor.addEventListener("change", function(){
+    codeEditorResult.innerHTML = codeEditor.getValue();
+  });
+
+  async function start(){
+    try{
+        let configurationJson = await fetch(`/configuration.json?user=${JSON.stringify(user)}`);
+        configurationJson = await configurationJson.json();
+
+        let templateExists = false;
+        for(let _template of configurationJson.templates){
+            if(_template.name == template.name){
+                templateExists = true;
+                template = _template;
+            }
+        }
+
+        if(templateExists){
+            let templateContent = await fetch(`/templates/${template.name}.content.html?user=${JSON.stringify(user)}`);
+            templateContent = await templateContent.text();
+            codeEditor.setValue(templateContent);
+            templateName.value = template.name;
+        }else{
+            document.body.innerHTML = `
+            <div style="text-align: center;">
+                <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
+            </div>
+                `; 
+        }
+        
+    }catch{
+        document.body.innerHTML = `
+        <div style="text-align: center;">
+            <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
+        </div>
+            `;
+    }
+  }
+  start();
+
+  buttonCancel.addEventListener("click", function () {
+    window.close();
+  });
+
+  addButton.addEventListener("click", async function () {
+    if (templateName.value) {
+      let body = {
+        updateTemplate: true,
+        content: codeEditor.getValue(),
+        template: {
+          name: templateName.value,
+          endpoint: templateName.value,
+        },
+      };
+
+      let response = await fetch(`/data?user=${JSON.stringify(user)}`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      let responseJson = await response.json();
+      console.log(responseJson);
+
+      if (responseJson.return == true) {
+        alert(`Template ${templateName.value} updated succesfully`);
+        window.close();
+      } else {
+        if (responseJson.data == 0) {
+          alert("template name already exists, please put another");
+        }
+      }
+    } else {
+      if (templateName.value == "") {
+        alert("Please put name to template");
+      }
+    }
+  });
+</script>

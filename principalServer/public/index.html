@@ -394,6 +394,18 @@
         buttonEdit.style.color = "black";
         tdElementOptions.appendChild(buttonEdit);
 
+        buttonEdit.addEventListener("click", function(){
+          let thisWindow = window.open(
+            `editDevice.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
+        });
+
         let buttonDelete = document.createElement("button");
         buttonDelete.innerText = "Delete";
         buttonDelete.classList.add("btn");
@@ -486,6 +498,18 @@
         buttonEdit.classList.add("btn-dark");
         buttonEdit.style.color = "black";
         tdElementOptions.appendChild(buttonEdit);
+
+        buttonEdit.addEventListener("click", async function(){
+          let thisWindow = window.open(
+            `editTemplate.html?template=${JSON.stringify(templatesArray[i].configuration)}&user=${JSON.stringify(user)}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
+        });
 
         let buttonDelete = document.createElement("button");
         buttonDelete.innerText = "Delete";

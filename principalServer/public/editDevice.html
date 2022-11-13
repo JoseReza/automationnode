@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit device</title>
+    <link rel="stylesheet" href="./bootstrap.css" />
+    <link rel="shortcut icon" href="./icon.png" type="image/x-icon" />
+  </head>
+  <body class="bg-dark">
+    <br />
+    <div
+      class="text-white bg-primary"
+      style="
+        width: 50%;
+        margin-left: 25%;
+        border-radius: 10px;
+        padding: 5%;
+        text-align: center;
+        margin-top: 5%;
+      "
+    >
+      <div class="bg-dark" style="width: 100%; border-radius: 10px">
+        <h2>Edit device</h2>
+      </div>
+      <div style="margin: 5%">
+        <div>
+          <div class="bg-dark text-white" style="border-radius: 10px">
+            Name:
+          </div>
+          <br />
+          <input id="deviceMenuName" type="text" placeholder="deviceName" />
+          <br />
+          <br />
+          <div class="bg-dark text-white" style="border-radius: 10px">
+            Protocol:
+          </div>
+          <br />
+          <select
+            id="deviceMenuSelectProtocol"
+            name="protocol"
+            style="width: 20%; text-align: center"
+          >
+            <option value="tcp/ip" selected>tcp/ip</option>
+          </select>
+          <br />
+          <br />
+          <div class="bg-dark text-white" style="border-radius: 10px">
+            Direction:
+          </div>
+          <br />
+          <div id="divMenuSelectProtocol">
+            <div>
+              <input
+                type="number"
+                id="deviceMenuIp0"
+                style="width: 20%"
+                value="192"
+              />.
+              <input
+                type="number"
+                id="deviceMenuIp1"
+                style="width: 20%"
+                value="168"
+              />.
+              <input
+                type="number"
+                id="deviceMenuIp2"
+                style="width: 20%"
+                value="4"
+              />.
+              <input
+                type="number"
+                id="deviceMenuIp3"
+                style="width: 20%"
+                value="1"
+              />
+            </div>
+            </div>
+          </div>
+          <br />
+          <br>
+          <div class="bg-dark text-white" style="border-radius: 10px">
+            Port:
+          </div>
+          <br />
+          <input type="number" min="1" max="100000" id="port" value="80" placeholder="80">
+          <br />
+          <br>
+          <br>
+          <button id="buttonCancel" class="btn btn-primary">
+            Cancel
+          </button>
+          <button id="buttonConfirm" class="btn btn-secondary">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  try{
+  let url = new URL(location.href);
+  let user = JSON.parse(url.searchParams.get("user"));
+  let device = JSON.parse(url.searchParams.get("device"));
+  console.log(user, device);
+  
+  async function start(){
+    let configurationJson = await fetch(`/configuration.json?user=${JSON.stringify(user)}`);
+    configurationJson = await configurationJson.json();
+
+    let deviceExists = false;
+    for(let _device of configurationJson.devices){
+      if(_device.name == device.name){
+        device = _device;
+        deviceExists = true;
+      }
+    }
+    if(deviceExists){
+      let buttonCancel = document.getElementById("buttonCancel");
+
+      let buttonConfirm = document.getElementById("buttonConfirm");
+
+      let deviceMenuName = document.getElementById("deviceMenuName");
+      deviceMenuName.value = device.name;
+
+      let deviceMenuSelectProtocol = document.getElementById(
+        "deviceMenuSelectProtocol"
+      );
+
+      let divMenuSelectProtocol = document.getElementById("divMenuSelectProtocol");
+      divMenuSelectProtocol.value = device.protocol;
+
+      let deviceMenuIp0 = document.getElementById("deviceMenuIp0");
+      deviceMenuIp0.value = device.direction.split(".")[0];
+      let deviceMenuIp1 = document.getElementById("deviceMenuIp1");
+      deviceMenuIp1.value = device.direction.split(".")[1];
+      let deviceMenuIp2 = document.getElementById("deviceMenuIp2");
+      deviceMenuIp2.value = device.direction.split(".")[2];
+      let deviceMenuIp3 = document.getElementById("deviceMenuIp3");
+      deviceMenuIp3.value = device.direction.split(".")[3];
+
+      let port = document.getElementById("port");
+      port.value = device.port;
+
+      buttonConfirm.addEventListener("click", async function () {
+        if (deviceMenuName.value != "") {
+          let body = {
+            updateDevice: true,
+            device: {
+              name: deviceMenuName.value,
+              type: device.type,
+              protocol: deviceMenuSelectProtocol.value,
+              port: port.value,
+              direction: "",
+            },
+          };
+
+          body.device.direction = `${deviceMenuIp0.value}.${deviceMenuIp1.value}.${deviceMenuIp2.value}.${deviceMenuIp3.value}`;
+
+          console.log(body);
+
+          let response = await fetch(`/data?user=${JSON.stringify(user)}`, {
+            method: "post",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          let responseJson = await response.json();
+
+          if (responseJson.return == true) {
+            alert("Device updated succesfully");
+            window.close();
+          }
+        } else {
+          alert("Please put a name to your new device");
+        }
+      });
+    }else{
+      document.body.innerHTML = `
+      <div style="text-align: center;">
+        <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Device does not exists</h2>
+      </div>
+        `;
+    }
+  }
+  start();
+
+  buttonCancel.addEventListener("click", function () {
+    window.close();
+  });
+}catch{
+  document.body.innerHTML = `
+  <div style="text-align: center;">
+      <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Device does not exists</h2>
+  </div>
+      `;
+}
+</script>
