@@ -25,7 +25,12 @@ async function start(newMessage) {
       if (currentMessage != lastMessage) {
         lastMessage = currentMessage;
         message = currentMessage;
-        let myJson = JSON.parse(message);
+        let myJson = undefined;
+        try{
+          myJson = JSON.parse(message);
+        }catch(error){
+          console.error(error);
+        }
         for(let pin in myJson){
           myJson[pin] = Number(myJson[pin]);
         }

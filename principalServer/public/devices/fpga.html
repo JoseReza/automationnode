@@ -36,7 +36,7 @@
         }
     </style>
   </head>
-  <body>
+  <body style="overflow-y: hidden;">
     <br>
     <div style="align-items: center; text-align: center; margin-left: 15%;">
 
@@ -55,17 +55,7 @@
                 <div style="clear: both;"></div>
     </div>
 
-    <div
-        class="bg-dark text-white" 
-        style="width: 70%; height: 400px; margin-left: 15%; border-radius: 10px; text-align: center; align-items: center;"
-    >
-        <div class="bg-primary">Streaming obtained</div>
-        <div id="deviceNotConnected" style="display: none; vertical-align: middle;">
-            <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Device Not Connected</h2>
-        </div>
-        <img id="video" style="width: 100%; height: 95%;"></img>
-    </div>
-
+    <iframe id="myIframe" style="width: 100%; height:100vh;"  frameborder="0"></iframe>
 
   </body>
 
@@ -75,9 +65,8 @@
 
     let deviceName = document.getElementById("deviceName");
     let deviceNameTitle = document.getElementById("deviceNameTitle");
-    let deviceNotConnected = document.getElementById("deviceNotConnected");
     let buttonCancel = document.getElementById("buttonCancel");
-    let video = document.getElementById("video");
+    let myIframe = document.getElementById("myIframe");
 
     let urlParams = new URLSearchParams(window.location.search);
     let user = JSON.parse(urlParams.get('user'));
@@ -93,25 +82,7 @@
         window.close();
     });
 
-    let interval = undefined;
-
     async function start(){
-
-        interval = setInterval(async function () {
-            let response = await fetch(`${location.origin}/camera?user=${JSON.stringify(user)}&device=${JSON.stringify(device)}`);
-            response = await response.json();
-            console.log(response);
-            if(response.return){
-                video.setAttribute("src", response.data);
-                video.style.display = "block";
-                deviceNotConnected.style.display = "none";
-            }else{
-                video.style.display = "none";
-                deviceNotConnected.style.display = "block";
-                clearInterval(interval);
-                setTimeout(start, 15000);
-            }
-        }, 100);
-
+        myIframe.setAttribute("src", `http://${device.direction}:${device.port}`);
     }start();
 </script>

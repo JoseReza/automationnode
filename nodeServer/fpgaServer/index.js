@@ -1,7 +1,7 @@
 const serialListener = require("./serialListener");
 const express = require("express");
 var app = express();
-const port = 3000;
+const port = 10000;
 
 app.use(express.json());
 app.use(express.static("public"));
