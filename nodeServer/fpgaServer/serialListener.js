@@ -1,13 +1,11 @@
 const { SerialPort } = require("serialport");
 
-
 async function start(newMessage) {
-
-    let portList = await SerialPort.list();
+  let portList = await SerialPort.list();
+  try {
     let path = portList[0].path;
-  
     const port = new SerialPort({ path: path, baudRate: 115200 });
-  
+
     let data = "";
     let currentMessage = "";
     let lastMessage = "";
@@ -26,22 +24,25 @@ async function start(newMessage) {
         lastMessage = currentMessage;
         message = currentMessage;
         let myJson = undefined;
-        try{
+        try {
           myJson = JSON.parse(message);
-        }catch(error){
+        } catch (error) {
           console.error(error);
         }
-        for(let pin in myJson){
+        for (let pin in myJson) {
           myJson[pin] = Number(myJson[pin]);
         }
         newMessage(myJson);
       }
     });
-  
+
     // Open errors will be emitted as an error event
     port.on("error", function (err) {
       console.log("Error: ", err.data);
     });
+  } catch (error) {
+    console.log(error);
   }
+}
 
-  module.exports = { start}
+module.exports = { start };

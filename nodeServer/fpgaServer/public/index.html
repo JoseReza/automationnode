@@ -5,82 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Logic analizer</title>
+    <link rel="icon" href="./icon.png">
+    <link rel="stylesheet" href="./bootstrap.css">
   </head>
   <body>
+    <br>
+      <div class="bg-dark text-white" style="text-align: center; width: 20%; margin-left: 5%; border-radius: 10px; padding: 1%; position: fixed; margin-top: 0;">
+        <div style="margin: 1%;">
+          <div class="bg-primary" style="width: 80%; margin-left:10%; border-radius: 10px;">
+            <label>Interval lecture (ms)</label>
+          </div>
+          <br>
+          <input id="inputInterval" type="number" min="1" max="30000" value="1000">
+          <br>
+          <br>
+          <div class="bg-primary" style="width: 80%; margin-left:10%; border-radius: 10px;">
+            <label>Length horizontal readings</label>
+          </div>
+          <br>
+          <input id="inputLength" type="number" min="1" max="500" value="100">
+        </div>
+        <br>
+        <div style="margin: 1%;">
+          <button id="buttonResume" class="btn btn-success btn-sm">Resume</button>
+          <button id="buttonPause" class="btn btn-danger btn-sm">Pause</button>
+        </div>
+      </div>
+      <div id="charts" style="width: 65%; margin-left: 30%;"></div>
   </body>
 </html>
 <script src="./chart.js"></script>
-<script>
-
-  let pinArray = ["A0", "A1", "A2", "A3", "A4", "A5", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"];
-  let chartArray = [];
-  let chartInstanceArray = [];
-  let arraysAxisX = [];
-  let arraysAxisY = [];
-
-  for(let pin of pinArray){
-    let chart = document.createElement("canvas");
-    chart.setAttribute("width", "400");
-    chart.setAttribute("height", "100");
-    document.body.appendChild(chart);
-    chartArray.push(chart);
-    let arrayAxisX = [];
-    let arrayAxisY = [];
-    arraysAxisX.push(arrayAxisX);
-    arraysAxisY.push(arrayAxisY);
-
-    let chartInstance = new Chart(chart, {
-    type: "line",
-    data: {
-      labels: arrayAxisX,
-      datasets: [
-        {
-          label: pin,
-          data: arrayAxisY,
-          backgroundColor: "rgba(54, 162, 235, 0.2)",
-          borderColor: "rgba(54, 162, 235, 1)",
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 5,
-          suggestedMax: 500,
-        },
-      },
-    },
-  });
-
-  chartInstance.options.animation = false; // disables all animations
-
-  chartInstanceArray.push(chartInstance);
-
-  }
-
-  setInterval(async function () {
-    let data = await fetch("/data");
-    data = await data.json();
-    console.log(data);
-
-    const currentDate = new Date();
-    let xAxisLabel = `${currentDate.getMinutes()}:${currentDate.getSeconds()}`;
-    
-    
-
-    for(let index in pinArray){
-      console.log(index);
-      console.log(arraysAxisX);
-      arraysAxisX[index].push(xAxisLabel);
-      if(pinArray[index][0] == "A" || pinArray[index][0] == "a"){
-        arraysAxisY[index].push((data[pinArray[index]] / 1024) * 5);  //Analogo
-      }else{
-        arraysAxisY[index].push(data[pinArray[index]] * 5); //Digital
-      }
-      chartInstanceArray[index].update();
-    }
-    
-  }, 100);
-</script>
+<script type="module" src="./index.js"></script>
