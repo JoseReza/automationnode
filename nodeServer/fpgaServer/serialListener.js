@@ -1,6 +1,8 @@
 const { SerialPort } = require("serialport");
 
-async function start(newMessage) {
+let readings = {};
+
+async function start() {
   let portList = await SerialPort.list();
   try {
     let path = portList[0].path;
@@ -32,7 +34,7 @@ async function start(newMessage) {
         for (let pin in myJson) {
           myJson[pin] = Number(myJson[pin]);
         }
-        newMessage(myJson);
+        readings = myJson;
       }
     });
 
@@ -45,4 +47,4 @@ async function start(newMessage) {
   }
 }
 
-module.exports = { start };
+module.exports = { start, readings };

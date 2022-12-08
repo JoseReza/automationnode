@@ -5,50 +5,55 @@ const { platform } = require("os");
 const dotenv = require("dotenv");
 const deviceRouter = require("./deviceRouter");
 const login = require("./login");
+const ngrok = require("ngrok");
 
 var app = express();
-const port = 3000;
 dotenv.config();
-
 app.use(express.json());
 
-app.get("/", login.check, (req, res) => {
-  res.send(
+let configurationJson = JSON.parse(
+  fs.readFileSync(__dirname + "/configuration.json", {
+    encoding: "utf-8",
+  })
+);
+
+app.get("/", login.check, (request, response) => {
+  response.send(
     fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })
   );
 });
 
-app.get("/index.html", login.check, (req, res) => {
-  res.send(
+app.get("/index.html", login.check, (request, response) => {
+  response.send(
     fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })
   );
 });
 
-app.get("/configuration.json", login.check, (req, res) => {
-  res.send(
+app.get("/configuration.json", login.check, (request, response) => {
+  response.send(
     fs.readFileSync(__dirname + "/configuration.json", { encoding: "utf-8" })
   );
 });
 
-app.put("/data", login.check, async (req, res) => {
+app.put("/data", login.check, async (request, response) => {
   try {
-    console.log(req.body);
-    if (req.body.saveNewDevice == true) {
+    console.log(request.body);
+    if (request.body.saveNewDevice == true) {
       //save new device
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
           encoding: "utf-8",
         })
       );
-      configurationJson.devices.push(req.body.device);
+      configurationJson.devices.push(request.body.device);
       fs.writeFileSync(
         __dirname + "/configuration.json",
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
-    if (req.body.saveNewUser == true) {
+    if (request.body.saveNewUser == true) {
       //save new user
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
@@ -56,20 +61,20 @@ app.put("/data", login.check, async (req, res) => {
         })
       );
       for (let _user of configurationJson.users) {
-        if (_user.name == req.body.user.name) {
-          res.send({ return: false, data: 0 });
+        if (_user.name == request.body.user.name) {
+          response.send({ return: false, data: 0 });
           return;
         }
       }
-      configurationJson.users.push(req.body.user);
+      configurationJson.users.push(request.body.user);
       fs.writeFileSync(
         __dirname + "/configuration.json",
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
-    if (req.body.saveNewTemplate == true) {
+    if (request.body.saveNewTemplate == true) {
       //save new template
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
@@ -77,18 +82,18 @@ app.put("/data", login.check, async (req, res) => {
         })
       );
       for (let _template of configurationJson.templates) {
-        if (_template.name == req.body.template.name) {
-          res.send({ return: false, data: 0 });
+        if (_template.name == request.body.template.name) {
+          response.send({ return: false, data: 0 });
           return;
         }
       }
       configurationJson.templates.push({
-        name: req.body.template.name,
-        endpoint: req.body.template.name,
+        name: request.body.template.name,
+        endpoint: request.body.template.name,
       });
       fs.writeFileSync(
-        __dirname + "/public/templates/" + req.body.template.name + ".content.html",
-        req.body.template.content,
+        __dirname + "/public/templates/" + request.body.template.name + ".content.html",
+        request.body.template.content,
         { encoding: "utf-8" }
       );
       let templateBase = `
@@ -100,15 +105,15 @@ app.put("/data", login.check, async (req, res) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="./../bootstrap.css" />
         <link rel="icon" href="./../icon.png" />
-        <title>${req.body.template.name}</title>
+        <title>${request.body.template.name}</title>
       </head>
       <body>
-      ${req.body.template.content}
+      ${request.body.template.content}
       </body>
     </html>
     `;
       fs.writeFileSync(
-        __dirname + "/public/templates/" + req.body.template.name + ".html",
+        __dirname + "/public/templates/" + request.body.template.name + ".html",
         templateBase,
         { encoding: "utf-8" }
       );
@@ -117,18 +122,18 @@ app.put("/data", login.check, async (req, res) => {
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
   } catch (error) {
     console.error(error);
   }
-  res.send(req.body);
+  response.send(request.body);
 });
 
-app.post("/data", login.check, async (req, res) => {
+app.post("/data", login.check, async (request, response) => {
   try {
-    console.log(req.body);
-    if (req.body.updateDevice == true) {
+    console.log(request.body);
+    if (request.body.updateDevice == true) {
       //update device
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
@@ -136,9 +141,9 @@ app.post("/data", login.check, async (req, res) => {
         })
       );
       for (let index in configurationJson.devices) {
-        if (req.body.device.name == configurationJson.devices[index].name) {
+        if (request.body.device.name == configurationJson.devices[index].name) {
           configurationJson.devices.splice(index, 1);
-          configurationJson.devices.push(req.body.device);
+          configurationJson.devices.push(request.body.device);
         }
       }
       fs.writeFileSync(
@@ -146,12 +151,12 @@ app.post("/data", login.check, async (req, res) => {
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
-    if (req.body.updateUser == true) {
+    if (request.body.updateUser == true) {
       //update user
     }
-    if (req.body.updateTemplate == true) {
+    if (request.body.updateTemplate == true) {
       //update template
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
@@ -159,14 +164,14 @@ app.post("/data", login.check, async (req, res) => {
         })
       );
       for (let index in configurationJson.templates) {
-        if (req.body.template.name == configurationJson.templates[index].name) {
+        if (request.body.template.name == configurationJson.templates[index].name) {
           configurationJson.templates.splice(index, 1);
-          configurationJson.templates.push(req.body.template);
+          configurationJson.templates.push(request.body.template);
         }
       }
       fs.writeFileSync(
-        __dirname + "/public/templates/" + req.body.template.name + ".content.html",
-        req.body.content,
+        __dirname + "/public/templates/" + request.body.template.name + ".content.html",
+        request.body.content,
         { encoding: "utf-8" }
       );
       let templateBase = `
@@ -178,15 +183,15 @@ app.post("/data", login.check, async (req, res) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link rel="stylesheet" href="./../bootstrap.css" />
           <link rel="icon" href="./../icon.png" />
-          <title>${req.body.template.name}</title>
+          <title>${request.body.template.name}</title>
         </head>
         <body>
-        ${req.body.content}
+        ${request.body.content}
         </body>
       </html>
       `;
       fs.writeFileSync(
-        __dirname + "/public/templates/" + req.body.template.name + ".html",
+        __dirname + "/public/templates/" + request.body.template.name + ".html",
         templateBase,
         { encoding: "utf-8" }
       );
@@ -195,25 +200,25 @@ app.post("/data", login.check, async (req, res) => {
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
   } catch (error) {
     console.error(error);
   }
-  res.send(req.body);
+  response.send(request.body);
 });
 
-app.delete("/data", login.check, async (req, res) => {
-  console.log(req.body);
+app.delete("/data", login.check, async (request, response) => {
+  console.log(request.body);
   try {
-    if (req.body.deleteDevice == true) {
+    if (request.body.deleteDevice == true) {
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
           encoding: "utf-8",
         })
       );
       for (let index in configurationJson.devices) {
-        if (req.body.device.name == configurationJson.devices[index].name) {
+        if (request.body.device.name == configurationJson.devices[index].name) {
           configurationJson.devices.splice(index, 1);
         }
       }
@@ -222,37 +227,37 @@ app.delete("/data", login.check, async (req, res) => {
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
-    if (req.body.deleteTemplate == true) {
+    if (request.body.deleteTemplate == true) {
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
           encoding: "utf-8",
         })
       );
       for (let index in configurationJson.templates) {
-        if (req.body.template.name == configurationJson.templates[index].name) {
+        if (request.body.template.name == configurationJson.templates[index].name) {
           configurationJson.templates.splice(index, 1);
         }
       }
       fs.unlinkSync(
-        __dirname + "/public/templates/" + req.body.template.name + ".html"
+        __dirname + "/public/templates/" + request.body.template.name + ".html"
       );
       fs.writeFileSync(
         __dirname + "/configuration.json",
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
-    if (req.body.deleteUser == true) {
+    if (request.body.deleteUser == true) {
       let configurationJson = JSON.parse(
         fs.readFileSync(__dirname + "/configuration.json", {
           encoding: "utf-8",
         })
       );
       for (let index in configurationJson.users) {
-        if (req.body.user.name == configurationJson.users[index].name) {
+        if (request.body.user.name == configurationJson.users[index].name) {
           configurationJson.users.splice(index, 1);
         }
       }
@@ -261,38 +266,38 @@ app.delete("/data", login.check, async (req, res) => {
         JSON.stringify(configurationJson),
         { encoding: "utf-8" }
       );
-      req.body.return = true;
+      request.body.return = true;
     }
   } catch (error) {
     console.error(error);
   }
-  res.send(req.body);
+  response.send(request.body);
 });
 
 app = deviceRouter.start(app);
 app.use(express.static("public"));
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-  let configurationJson = JSON.parse(
-    fs.readFileSync(__dirname + "/configuration.json", {
-      encoding: "utf-8",
-    })
-  );
+app.listen(Number(configurationJson["ngrok"]["port"]), async () => {
+  console.log(`Example app listening on port ${Number(configurationJson["ngrok"]["port"])}`);
+
+  //await ngrok.authtoken(configurationJson["ngrok"]["authtoken"]);
+  //let ngrokUrl = await ngrok.connect(configurationJson["ngrok"]["port"]);
+  //console.log("ngrokUrl: ", ngrokUrl);
+
   if (platform() == "win32") {
     if (process.env.PRODUCTION == "true") {
       exec(
-        `start msedge --kiosk http://localhost:${port} --edge-kiosk-type=fullscreen`
+        `start msedge --kiosk http://localhost:${Number(configurationJson["ngrok"]["port"])} --edge-kiosk-type=fullscreen`
       );
     } else {
-      exec(`start msedge http://localhost:${port}`);
+      exec(`start msedge http://localhost:${Number(configurationJson["ngrok"]["port"])}`);
     }
   }
   if (platform() == "linux") {
     if (process.env.PRODUCTION == "true") {
-      exec(`chromium-browser http://localhost:${port} --kiosk`);
+      exec(`chromium-browser http://localhost:${Number(configurationJson["ngrok"]["port"])} --kiosk`);
     } else {
-      exec(`chromium-browser http://localhost:${port}`);
+      exec(`chromium-browser http://localhost:${Number(configurationJson["ngrok"]["port"])}`);
     }
   }
 });

@@ -1,0 +1,13 @@
+{
+    "server": {
+        "port": 10000
+    },
+    "fpga":{
+        "ide":{
+            "port": 1234
+        }
+    },
+    "ngrok": {
+        "authtoken": "2EVxlOmL2iEke2eOAqIBwiujWrW_7gQtb8xNrY8v9Gu9z5tAR"
+    }
+}

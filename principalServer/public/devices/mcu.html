@@ -7,34 +7,7 @@
     <title id="deviceNameTitle">Mcu</title>
     <link rel="icon" href="./../icon.png">
     <link rel="stylesheet" href="./../bootstrap.css">
-    <style>
-        button:hover {
-            background-color: #fff;
-            color: #000;
-        }
-
-        #logo {
-            position: relative;
-            animation-name: animationLogo;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-        }
-
-        @keyframes animationLogo {
-            0% {
-                transform: rotate(0deg);
-            }
-            33% {
-                transform: rotate(120deg);
-            }
-            66% {
-                transform: rotate(240deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./mcu.css">
   </head>
   <body>
     <br>
@@ -70,48 +43,4 @@
   </body>
 
 </html>
-
-<script>
-
-    let deviceName = document.getElementById("deviceName");
-    let deviceNameTitle = document.getElementById("deviceNameTitle");
-    let deviceNotConnected = document.getElementById("deviceNotConnected");
-    let buttonCancel = document.getElementById("buttonCancel");
-    let video = document.getElementById("video");
-
-    let urlParams = new URLSearchParams(window.location.search);
-    let user = JSON.parse(urlParams.get('user'));
-    console.log(user);
-    let device = JSON.parse(urlParams.get("device"));
-    console.log(device);
-
-    deviceName.innerText = device.name
-    deviceNameTitle.innerText = device.name;
-
-
-    buttonCancel.addEventListener("click", function(){
-        window.close();
-    });
-
-    let interval = undefined;
-
-    async function start(){
-
-        interval = setInterval(async function () {
-            let response = await fetch(`${location.origin}/camera?user=${JSON.stringify(user)}&device=${JSON.stringify(device)}`);
-            response = await response.json();
-            console.log(response);
-            if(response.return){
-                video.setAttribute("src", response.data);
-                video.style.display = "block";
-                deviceNotConnected.style.display = "none";
-            }else{
-                video.style.display = "none";
-                deviceNotConnected.style.display = "block";
-                clearInterval(interval);
-                setTimeout(start, 15000);
-            }
-        }, 100);
-
-    }start();
-</script>
+<script src="./mcu.js" type="module"></script>
