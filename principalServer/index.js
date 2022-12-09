@@ -1,11 +1,11 @@
-const { exec } = require("child_process");
-const express = require("express");
-const fs = require("fs");
-const { platform } = require("os");
-const dotenv = require("dotenv");
 const deviceRouter = require("./deviceRouter");
+const childProcess = require("child_process");
+const express = require("express");
 const login = require("./login");
+const dotenv = require("dotenv");
 const ngrok = require("ngrok");
+const fs = require("fs");
+const os = require("os");
 
 var app = express();
 dotenv.config();
@@ -280,24 +280,31 @@ app.use(express.static("public"));
 app.listen(Number(configurationJson["server"]["port"]), async () => {
   console.log(`Example app listening on port ${Number(configurationJson["server"]["port"])}`);
 
-  //await ngrok.authtoken(configurationJson["server"]["authtoken"]);
-  //let ngrokUrl = await ngrok.connect(configurationJson["server"]["port"]);
-  //console.log("ngrokUrl: ", ngrokUrl);
+  /*
+  
+  let ngrokUrl = await ngrok.connect({
+    proto: "http",
+    addr: Number(configurationJson["server"]["port"]),
+    authtoken: configurationJson["ngrok"]["authtoken"]
+  });
+  console.log("ngrokUrl: ", ngrokUrl);
 
-  if (platform() == "win32") {
+  */
+
+  if (os.platform() == "win32") {
     if (process.env.PRODUCTION == "true") {
-      exec(
+      childProcess.exec(
         `start msedge --kiosk http://localhost:${Number(configurationJson["server"]["port"])} --edge-kiosk-type=fullscreen`
       );
     } else {
-      exec(`start msedge http://localhost:${Number(configurationJson["server"]["port"])}`);
+      childProcess.exec(`start msedge http://localhost:${Number(configurationJson["server"]["port"])}`);
     }
   }
-  if (platform() == "linux") {
+  if (os.platform() == "linux") {
     if (process.env.PRODUCTION == "true") {
-      exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])} --kiosk`);
+      childProcess.exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])} --kiosk`);
     } else {
-      exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])}`);
+      childProcess.exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])}`);
     }
   }
 });

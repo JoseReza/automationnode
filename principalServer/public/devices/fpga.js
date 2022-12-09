@@ -1,9 +1,10 @@
 import * as time from "./../time.js";
 
+let deviceNotConnected = document.getElementById("deviceNotConnected");
+let content = document.getElementById("content");
 let deviceName = document.getElementById("deviceName");
 let deviceNameTitle = document.getElementById("deviceNameTitle");
 let buttonCancel = document.getElementById("buttonCancel");
-let myIframe = document.getElementById("myIframe");
 let inputInterval = document.getElementById("inputInterval");
 let inputLength = document.getElementById("inputLength");
 let buttonResume = document.getElementById("buttonResume");
@@ -50,8 +51,6 @@ deviceNameTitle.innerText = device.name;
 buttonCancel.addEventListener("click", function () {
   window.close();
 });
-
-/////////////////////////////
 
 inputInterval.addEventListener("change", function () {
   if (Number(inputInterval.value) != NaN) {
@@ -119,6 +118,10 @@ for (let pin of pinArray) {
 }
 
 async function loop() {
+
+  deviceNotConnected.style.display = "none";
+  content.style.display = "block";
+
   let body = {
     getReadings: true,
     device: device,
@@ -138,6 +141,15 @@ async function loop() {
   data = await data.json();
 
   console.log(data);
+
+  if (data.return == false) {
+    running = false;
+    deviceNotConnected.style.display = "block";
+    content.style.display = "none";
+    setTimeout(function () {
+      location.reload();
+    }, 60000);
+  }
 
   await time.wait(timeToUpdate);
 

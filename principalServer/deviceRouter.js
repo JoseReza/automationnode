@@ -46,7 +46,6 @@ function start(app) {
   });
 
   app.post("/fpga", login.check, async (request, response) => {
-    console.log("-->", request.body);
     request.body.return = false;
 
     try {
