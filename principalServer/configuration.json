@@ -1,7 +1,9 @@
 {
-  "ngrok": {
-    "authtoken": "2EVxlOmL2iEke2eOAqIBwiujWrW_7gQtb8xNrY8v9Gu9z5tAR",
+  "server":{
     "port": 3000
+  },
+  "ngrok": {
+    "authtoken": "2EVxlOmL2iEke2eOAqIBwiujWrW_7gQtb8xNrY8v9Gu9z5tAR"
   },
   "devices": [
     {

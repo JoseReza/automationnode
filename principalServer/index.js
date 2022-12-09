@@ -277,27 +277,27 @@ app.delete("/data", login.check, async (request, response) => {
 app = deviceRouter.start(app);
 app.use(express.static("public"));
 
-app.listen(Number(configurationJson["ngrok"]["port"]), async () => {
-  console.log(`Example app listening on port ${Number(configurationJson["ngrok"]["port"])}`);
+app.listen(Number(configurationJson["server"]["port"]), async () => {
+  console.log(`Example app listening on port ${Number(configurationJson["server"]["port"])}`);
 
-  //await ngrok.authtoken(configurationJson["ngrok"]["authtoken"]);
-  //let ngrokUrl = await ngrok.connect(configurationJson["ngrok"]["port"]);
+  //await ngrok.authtoken(configurationJson["server"]["authtoken"]);
+  //let ngrokUrl = await ngrok.connect(configurationJson["server"]["port"]);
   //console.log("ngrokUrl: ", ngrokUrl);
 
   if (platform() == "win32") {
     if (process.env.PRODUCTION == "true") {
       exec(
-        `start msedge --kiosk http://localhost:${Number(configurationJson["ngrok"]["port"])} --edge-kiosk-type=fullscreen`
+        `start msedge --kiosk http://localhost:${Number(configurationJson["server"]["port"])} --edge-kiosk-type=fullscreen`
       );
     } else {
-      exec(`start msedge http://localhost:${Number(configurationJson["ngrok"]["port"])}`);
+      exec(`start msedge http://localhost:${Number(configurationJson["server"]["port"])}`);
     }
   }
   if (platform() == "linux") {
     if (process.env.PRODUCTION == "true") {
-      exec(`chromium-browser http://localhost:${Number(configurationJson["ngrok"]["port"])} --kiosk`);
+      exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])} --kiosk`);
     } else {
-      exec(`chromium-browser http://localhost:${Number(configurationJson["ngrok"]["port"])}`);
+      exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])}`);
     }
   }
 });
