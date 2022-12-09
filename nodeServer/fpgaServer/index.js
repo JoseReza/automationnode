@@ -15,11 +15,15 @@ async function start() {
   let configurationJson = JSON.parse(
     fs.readFileSync(`${__dirname}/configuration.json`, { encoding: "utf-8" })
   );
+
+  /*
   ngrok.authtoken(configurationJson["ngrok"]["authtoken"]);
 
   let ngrokForFpgaIde = await ngrok.connect(
     configurationJson["fpga"]["ide"]["port"]
   );
+    */
+
 
   await serialListener.start();
 
