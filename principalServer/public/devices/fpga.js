@@ -159,9 +159,9 @@ async function loop() {
   for (let index in pinArray) {
     arraysAxisX[index].push(xAxisLabel);
     if (pinArray[index][0] == "A" || pinArray[index][0] == "a") {
-      arraysAxisY[index].push((data[pinArray[index]] / 1024) * 5); //Analogo
+      arraysAxisY[index].push((data.data.data[pinArray[index]] / 1024) * 5); //Analogo
     } else {
-      arraysAxisY[index].push(data[pinArray[index]] * 5); //Digital
+      arraysAxisY[index].push(data.data.data[pinArray[index]] * 5); //Digital
     }
 
     if (
