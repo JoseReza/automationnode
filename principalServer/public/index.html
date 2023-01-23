@@ -186,7 +186,7 @@
 <script>
   let url = new URL(location.href);
   let user = JSON.parse(url.searchParams.get("user"));
-  console.log(user);
+  //console.log(user);
   
   let buttonShowMenu = document.getElementById("buttonShowMenu");
   let buttonShowDevices = document.getElementById("buttonShowDevices");
@@ -254,7 +254,10 @@
       `/configuration.json?user=${JSON.stringify(user)}`
     );
     let responseJson = await responseString.json();
-    console.log(responseJson);
+
+    if(responseJson["server"]["production"] == false){
+      console.log(responseJson);
+    }
 
     if (responseJson) {
       addNewDevice.addEventListener("click", function () {
@@ -457,7 +460,7 @@
           html: templateHtml,
         });
 
-        console.log(templatesArray);
+        //console.log(templatesArray);
 
         templatesArray[i].html.classList.add("table-primary");
         templatesArray[i].html.innerHTML = `

@@ -1,6 +1,6 @@
 {
     "server": {
-        "port": 10000
+        "port": 1234
     },
     "fpga":{
         "ide":{

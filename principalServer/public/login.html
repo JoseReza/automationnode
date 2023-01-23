@@ -61,6 +61,7 @@
         <br>
         <br>   
     </div>
+    <div style="margin: 2%; width: 60%; margin-left: 20%; border-radius: 10px; text-align: center; padding: 2%; display: none;" class="bg-secondary text-dark" id="divPublicUrl"></div>
 </body>
 </html>
 <script>
@@ -76,5 +77,20 @@
         }
         window.location.href = window.location.origin + `/?user=${JSON.stringify(user)}`; 
     });
+
+    async function start(){
+        if(window.location.hostname == "localhost"){
+            let publicUrl = await fetch("publicUrl");
+            publicUrl = await publicUrl.text();
+            console.log(publicUrl);
+            let divPublicUrl =  document.getElementById("divPublicUrl");
+            divPublicUrl.style.display = "block";
+            divPublicUrl.innerHTML = `
+                <h2>Public Url</h2>
+                <a href="${publicUrl}" style="text-decoration:none;">${publicUrl}<a>
+            `;
+        }
+    }
+    start();
 
 </script>

@@ -17,6 +17,14 @@ let configurationJson = JSON.parse(
   })
 );
 
+app.get("/publicUrl", (request, response) => {
+  console.log("publicUrl");
+  let configurationJson = JSON.parse(fs.readFileSync(__dirname + "/configuration.json", { encoding: "utf-8" }));
+  response.send(
+    configurationJson["ngrok"]["url"]
+  );
+});
+
 app.get("/", login.check, (request, response) => {
   response.send(
     fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })
@@ -92,7 +100,10 @@ app.put("/data", login.check, async (request, response) => {
         endpoint: request.body.template.name,
       });
       fs.writeFileSync(
-        __dirname + "/public/templates/" + request.body.template.name + ".content.html",
+        __dirname +
+          "/public/templates/" +
+          request.body.template.name +
+          ".content.html",
         request.body.template.content,
         { encoding: "utf-8" }
       );
@@ -164,13 +175,18 @@ app.post("/data", login.check, async (request, response) => {
         })
       );
       for (let index in configurationJson.templates) {
-        if (request.body.template.name == configurationJson.templates[index].name) {
+        if (
+          request.body.template.name == configurationJson.templates[index].name
+        ) {
           configurationJson.templates.splice(index, 1);
           configurationJson.templates.push(request.body.template);
         }
       }
       fs.writeFileSync(
-        __dirname + "/public/templates/" + request.body.template.name + ".content.html",
+        __dirname +
+          "/public/templates/" +
+          request.body.template.name +
+          ".content.html",
         request.body.content,
         { encoding: "utf-8" }
       );
@@ -236,7 +252,9 @@ app.delete("/data", login.check, async (request, response) => {
         })
       );
       for (let index in configurationJson.templates) {
-        if (request.body.template.name == configurationJson.templates[index].name) {
+        if (
+          request.body.template.name == configurationJson.templates[index].name
+        ) {
           configurationJson.templates.splice(index, 1);
         }
       }
@@ -278,33 +296,64 @@ app = deviceRouter.start(app);
 app.use(express.static("public"));
 
 app.listen(Number(configurationJson["server"]["port"]), async () => {
-  console.log(`Example app listening on port ${Number(configurationJson["server"]["port"])}`);
+  console.log(
+    `Example app listening on port ${Number(
+      configurationJson["server"]["port"]
+    )}`
+  );
 
-  /*
-  
-  let ngrokUrl = await ngrok.connect({
-    proto: "http",
-    addr: Number(configurationJson["server"]["port"]),
-    authtoken: configurationJson["ngrok"]["authtoken"]
-  });
-  console.log("ngrokUrl: ", ngrokUrl);
+  try {
+    let ngrokUrl = await ngrok.connect({
+      proto: "http",
+      addr: Number(configurationJson["server"]["port"]),
+      authtoken: process.env.authtoken,
+    });
+    configurationJson["ngrok"]["url"] = ngrokUrl;
+    console.log("ngrokUrl: ", ngrokUrl);
+    fs.writeFileSync(`${__dirname}/configuration.json`, JSON.stringify(configurationJson), {encoding: "utf-8"});
+  } catch (error) {
+    console.error(error);
+    console.log("-->Probably the ngrok authtoken is wrong or expired");
+  }
 
-  */
 
   if (os.platform() == "win32") {
-    if (process.env.PRODUCTION == "true") {
+    if (
+      configurationJson["server"]["showBrowser"] == true &&
+      configurationJson["server"]["production"] == true
+    ) {
       childProcess.exec(
-        `start msedge --kiosk http://localhost:${Number(configurationJson["server"]["port"])} --edge-kiosk-type=fullscreen`
+        `start msedge --kiosk http://localhost:${Number(
+          configurationJson["server"]["port"]
+        )} --edge-kiosk-type=fullscreen`
       );
-    } else {
-      childProcess.exec(`start msedge http://localhost:${Number(configurationJson["server"]["port"])}`);
+    } else if (
+      configurationJson["server"]["showBrowser"] == true &&
+      configurationJson["server"]["production"] == false
+    ) {
+      childProcess.exec(
+        `start msedge http://localhost:${Number(
+          configurationJson["server"]["port"]
+        )}`
+      );
     }
   }
   if (os.platform() == "linux") {
-    if (process.env.PRODUCTION == "true") {
-      childProcess.exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])} --kiosk`);
-    } else {
-      childProcess.exec(`chromium-browser http://localhost:${Number(configurationJson["server"]["port"])}`);
+    if (configurationJson["server"]["showBrowser"] == true) {
+      childProcess.exec(
+        `chromium-browser http://localhost:${Number(
+          configurationJson["server"]["port"]
+        )} --kiosk`
+      );
+    } else if (
+      configurationJson["server"]["showBrowser"] == true &&
+      configurationJson["server"]["production"] == false
+    ) {
+      childProcess.exec(
+        `chromium-browser http://localhost:${Number(
+          configurationJson["server"]["port"]
+        )}`
+      );
     }
   }
 });
