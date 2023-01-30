@@ -4,8 +4,9 @@
   "description": "Virtual Lab for node js",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "test": "",
+    "start": "node index.js",
+    "compile": ""
   },
   "author": "Jose Soto Reza and Alan Nevarez Zamora",
   "license": "ISC",
@@ -15,5 +16,8 @@
     "ngrok": "^4.3.3",
     "node-fetch": "^2.6.1",
     "serialport": "^10.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
   }
 }

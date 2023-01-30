@@ -11,7 +11,8 @@ var app = express();
 dotenv.config();
 app.use(express.json());
 
-let configurationJson = JSON.parse(
+let configurationJson = require("./configuration");
+configurationJson = JSON.parse(
   fs.readFileSync(__dirname + "/configuration.json", {
     encoding: "utf-8",
   })
