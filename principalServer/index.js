@@ -17,23 +17,29 @@ let configurationJson = JSON.parse(
   })
 );
 
+
+//Without login
+
 app.get("/publicUrl", (request, response) => {
-  console.log("publicUrl");
   let configurationJson = JSON.parse(fs.readFileSync(__dirname + "/configuration.json", { encoding: "utf-8" }));
   response.send(
     configurationJson["ngrok"]["url"]
   );
 });
 
+
+app.get("/login.html", (request, response) => {
+  response.send(
+    fs.readFileSync(__dirname + "/public/login.html", { encoding: "utf-8" })
+    );
+  });
+  
+  
+//With login
+
 app.get("/", login.check, (request, response) => {
   response.send(
-    fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })
-  );
-});
-
-app.get("/index.html", login.check, (request, response) => {
-  response.send(
-    fs.readFileSync(__dirname + "/public/index.html", { encoding: "utf-8" })
+    fs.readFileSync(__dirname + "/public/login.html", { encoding: "utf-8" })
   );
 });
 
@@ -293,7 +299,8 @@ app.delete("/data", login.check, async (request, response) => {
 });
 
 app = deviceRouter.start(app);
-app.use(express.static("public"));
+app.use("/resources",express.static("resources"));
+app.use(login.check).use(express.static("public"));
 
 app.listen(Number(configurationJson["server"]["port"]), async () => {
   console.log(
