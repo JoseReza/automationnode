@@ -1,82 +1,50 @@
 {
-    "server": {
-        "port": 3000,
-        "production": false,
-        "showBrowser": false
+  "server": { "port": 3000, "production": false, "showBrowser": false },
+  "ngrok": { "url": "https://e178-201-146-55-249.ngrok.io" },
+  "devices": [
+    {
+      "name": "device two",
+      "type": "camera",
+      "protocol": "tcp/ip",
+      "port": "80",
+      "direction": "192.168.4.1",
+      "template": "template One"
     },
-    "ngrok": {
-        "url": "https://a722-2806-1016-d-9718-5425-974e-a8c5-5d28.ngrok.io"
+    {
+      "name": "testFpga",
+      "type": "fpga",
+      "protocol": "tcp/ip",
+      "direction": "192.168.1.137",
+      "port": "10000",
+      "template": 0
     },
-    "devices": [
+    {
+      "name": "fpga test",
+      "type": "fpga",
+      "protocol": "tcp/ip",
+      "port": "1234",
+      "direction": "192.168.1.249",
+      "template": 0
+    }
+  ],
+  "templates": [{ "name": "templateOne", "endpoint": "templateOne" }],
+  "users": [
+    {
+      "name": "rafael",
+      "password": "password",
+      "templates": [
         {
-            "name": "device two",
-            "type": "camera",
-            "protocol": "tcp/ip",
-            "port": "80",
-            "direction": "192.168.4.1",
-            "templateReference": "templateOne"
-        },
-        {
-            "name": "testFpga",
-            "type": "fpga",
-            "protocol": "tcp/ip",
-            "direction": "192.168.1.137",
-            "port": "10000",
-            "templateReference": "templateOne"
+          "name": "templateOne",
+          "schedule": {
+            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
+            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
+          }
         }
-    ],
-    "templates": [
-        {
-            "name": "templateOne",
-            "endpoint": "templateOne",
-            "type": "camera/fpga",
-            "devices": [
-                "device two",
-                "test fpga"
-            ]
-        }
-    ],
-    "users": [
-        {
-            "name": "rafael",
-            "password": "password",
-            "admin": false,
-            "templatesReference": [{
-                "name": "templateOne",
-                "schedule": {
-                    "start": "",
-                    "end": ""
-                }
-            }]
-        },
-        {
-            "name": "mario",
-            "password": "password",
-            "admin": false,
-            "templatesReference": [{
-                "name": "templateOne",
-                "schedule": {
-                    "start": "",
-                    "end": ""
-                }
-            }]
-        },
-        {
-            "name": "alan",
-            "password": "password",
-            "admin": false,
-            "templatesReference": [{
-                "name": "templateOne",
-                "schedule": {
-                    "start": "",
-                    "end": ""
-                }
-            }]
-        },
-        {
-            "name": "jose",
-            "password": "password",
-            "admin": true
-        }
-    ]
+      ],
+      "admin": false
+    },
+    { "name": "mario", "password": "password", "templates":[],  "admin": false },
+    { "name": "alan", "password": "password", "templates":[], "admin": false },
+    { "name": "jose", "password": "password", "templates":[], "admin": true }
+  ]
 }

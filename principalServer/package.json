@@ -4,9 +4,9 @@
   "description": "Virtual Lab for node js",
   "main": "server.js",
   "scripts": {
-    "test": "",
-    "start": "node index.js",
-    "compile": ""
+    "test": "tsc && node backendOutput/index.js",
+    "start": "node backendOutput/index.js",
+    "compile": "tsc -build"
   },
   "author": "Jose Soto Reza and Alan Nevarez Zamora",
   "license": "ISC",
@@ -18,6 +18,6 @@
     "serialport": "^10.4.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   }
 }

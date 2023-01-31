@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en" style="width: 100%; height: 95%">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/bootstrap.css" />
+  <link rel="shortcut icon" href="/icon.png" type="image/x-icon" />
+  <title>Management Server</title>
+  <style>
+    #logo {
+      position: relative;
+      animation-name: animationLogo;
+      animation-duration: 10s;
+      animation-iteration-count: infinite;
+    }
+
+    body {
+      overflow-y: hidden;
+      height: 100%;
+      background-color: #000;
+    }
+
+    @keyframes animationLogo {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      33% {
+        transform: rotate(120deg);
+      }
+
+      66% {
+        transform: rotate(240deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div style="align-items: center; text-align: center;" class="bg-dark">
+    <br />
+    <div class="bg-dark text-white" style="border-radius: 10px; width: 40%; margin-left: 5%; float: left;">
+      <h2 style="padding: 3%">Management server</h2>
+    </div>
+    <div class="btn btn-secondary btn-sm"
+      style="border-radius: 10px; width: 10%; margin-left: 2%; margin-top: 0.5%; float: left;" id="buttonShowMenu">
+      Main
+    </div>
+    <div class="btn btn-primary btn-sm text-white"
+      style="border-radius: 10px; width: 10%; margin-left: 2%; margin-top: 0.5%; float: left;" id="buttonShowDevices">
+      Devices
+    </div>
+    <div class="btn btn-success btn-sm text-white"
+      style="border-radius: 10px; width: 10%; margin-left: 2%; margin-top: 0.5%; float: left;" id="buttonShowTemplates">
+      Templates
+    </div>
+    <div class="btn btn-warning btn-sm text-white"
+      style="border-radius: 10px; width: 10%; margin-left: 2%; margin-top: 0.5%; float: left;" id="buttonShowUsers">
+      Users
+    </div>
+    <div style="clear: both"></div>
+    <br />
+  </div>
+
+  <div style="height: 90%">
+    <div style="
+          align-items: center;
+          text-align: center;
+          width: 100%;
+          float: left;
+          height: 100%;
+          background-color: #fff;
+          display: block;
+        " id="divMenu">
+
+      <div class="bg-dark text-white"
+        style="border-radius: 10px; width: 30%; margin-top: 3%; padding: 1%; float: left; margin-left: 3%;">
+        <img id="logo" src="/icon.png" style="padding: 1%; width: 30%" />
+        <h4>Automation Node</h4>
+      </div>
+
+      <div style="border-radius: 10px; width: 30%; margin-top: 3%; padding: 1%; float: left; margin-left: 3%;"
+        class="bg-primary text-white">
+        <h4 style="border-radius: 10px" class="bg-dark">Session</h4>
+        <div class="bg-dark text-white" style="border-radius: 10px">
+          <div style="padding: 3%">
+            Logged as <span id="userNameText"></span>
+          </div>
+        </div>
+        <br />
+        <button id="closeSession" class="btn btn-secondary btn-sm">
+          Log out
+        </button>
+        <button id="addUser" class="btn btn-secondary btn-sm">Add user</button>
+        <br>
+        <br>
+        <button id="deleteUser" class="btn btn-danger btn-sm">Delete my user</button>
+      </div>
+
+      <div style="border-radius: 10px; width: 30%; margin-top: 3%; padding: 1%; margin-left: 3%; float: left;"
+        class="bg-primary text-white">
+        <h4 style="border-radius: 10px" class="bg-dark">Device</h4>
+        <button id="addNewDevice" class="btn btn-secondary btn-sm">
+          Add
+        </button>
+      </div>
+
+
+      <div style="border-radius: 10px; width: 30%; margin-top: 1%; padding: 1%; margin-left: 3%; float: left;"
+        class="bg-success text-white">
+        <h4 style="border-radius: 10px" class="bg-dark">Template</h4>
+        <button id="addNewTemplate" class="btn btn-secondary btn-sm">
+          Add
+        </button>
+      </div>
+
+    </div>
+
+
+    <div style="background-color: white; width: 100%; height: 100%; overflow-y: scroll; display: none; float: left;"
+      id="divDevices">
+      <table id="devicesList" class="table table-hover" style="text-align: center;">
+        <tr>
+          <th class="bg-primary" style="color: white">Name</th>
+          <th class="bg-primary" style="color: white">Type</th>
+          <th class="bg-primary" style="color: white">Protocol</th>
+          <th class="bg-primary" style="color: white">Direction</th>
+          <th class="bg-primary" style="color: white">Port</th>
+          <th class="bg-primary" style="color: white">Access</th>
+          <th class="bg-primary" style="color: white">Options</th>
+        </tr>
+      </table>
+    </div>
+
+    <br>
+
+    <div style="background-color: white; width: 100%; height: 100%; overflow-y: scroll; display: none; float: left;"
+      id="divTemplates">
+      <table id="templatesList" class="table table-hover" style="text-align: center; width: 100%;">
+        <tr>
+          <th class="bg-success" style="color: white;">Name</th>
+          <th class="bg-success" style="color: white;">Endpoint</th>
+          <th class="bg-success" style="color: white;">Access</th>
+          <th class="bg-success" style="color: white;">Options</th>
+        </tr>
+      </table>
+    </div>
+
+    <div style="background-color: white; width: 100%; height: 100%; overflow-y: scroll; display: none; float: left;"
+      id="divUsers">
+      <table id="usersList" class="table table-hover" style="text-align: center;">
+        <tr>
+          <th class="bg-warning" style="color: white">Name</th>
+          <th class="bg-warning" style="color: white">Password</th>
+          <th class="bg-warning" style="color: white">Admin</th>
+          <th class="bg-warning" style="color: white">Templates</th>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  </div>
+  <div style="clear: both;"></div>
+
+</body>
+
+</html>
+<script>
+  let url = new URL(location.href);
+  let user = JSON.parse(url.searchParams.get("user"));
+
+  let buttonShowMenu = document.getElementById("buttonShowMenu");
+  let buttonShowDevices = document.getElementById("buttonShowDevices");
+  let buttonShowTemplates = document.getElementById("buttonShowTemplates");
+  let buttonShowUsers = document.getElementById("buttonShowUsers");
+  let divMenu = document.getElementById("divMenu");
+  let divDevices = document.getElementById("divDevices");
+  let divTemplates = document.getElementById("divTemplates");
+  let divUsers = document.getElementById("divUsers");
+
+  let devicesArray = [];
+  let devicesList = document.getElementById("devicesList");
+
+  let templatesArray = [];
+  let templatesList = document.getElementById("templatesList");
+
+  let usersArray = [];
+  let usersList = document.getElementById("usersList");
+
+
+  let addUser = document.getElementById("addUser");
+  let addNewTemplate = document.getElementById("addNewTemplate");
+  let deleteUser = document.getElementById("deleteUser");
+  let closeSession = document.getElementById("closeSession");
+  let userNameText = document.getElementById("userNameText");
+  userNameText.innerHTML = user.name;
+
+  let addNewDevice = document.getElementById("addNewDevice");
+
+  closeSession.addEventListener("click", function () {
+    if (confirm("Are you secure of close session?")) {
+      location.replace("/");
+    }
+  });
+
+  let interfaceOption = "main";
+
+  function interfaceRender(interfaceOption) {
+    divMenu.style.display = "none";
+    divDevices.style.display = "none";
+    divTemplates.style.display = "none";
+    divUsers.style.display = "none";
+    switch (interfaceOption) {
+      case "main":
+        divMenu.style.display = "block";
+        break;
+      case "devices":
+        divDevices.style.display = "block";
+        break;
+      case "templates":
+        divTemplates.style.display = "block";
+        break;
+      case "users":
+        divUsers.style.display = "block";
+        break;
+    }
+  }
+
+  buttonShowMenu.addEventListener("click", function () {
+    interfaceOption = "main";
+    interfaceRender(interfaceOption);
+  });
+  buttonShowDevices.addEventListener("click", function () {
+    interfaceOption = "devices";
+    interfaceRender(interfaceOption);
+  });
+  buttonShowTemplates.addEventListener("click", function () {
+    interfaceOption = "templates";
+    interfaceRender(interfaceOption);
+  });
+  buttonShowUsers.addEventListener("click", function () {
+    interfaceOption = "users";
+    interfaceRender(interfaceOption);
+  });
+
+  async function start() {
+    let responseString = await fetch(
+      `/configuration.json?user=${JSON.stringify(user)}`
+    );
+    let responseJson = await responseString.json();
+
+    if (responseJson["server"]["production"] == false) {
+      console.log(user);
+      console.log(responseJson);
+    }
+
+    if (responseJson) {
+      addNewDevice.addEventListener("click", function () {
+        let thisWindow = window.open(
+          `addDevice.html?user=${JSON.stringify(user)}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
+            location.reload();
+          }
+        }, 1000);
+      });
+
+      addUser.addEventListener("click", async function () {
+        let thisWindow = window.open(
+          `addUser.html?user=${JSON.stringify(user)}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
+            location.reload();
+          }
+        }, 1000);
+      });
+
+      addNewTemplate.addEventListener("click", async function () {
+        let thisWindow = window.open(
+          `addTemplate.html?user=${JSON.stringify(user)}`
+        );
+        let thisInterval = setInterval(function () {
+          if (thisWindow.closed) {
+            clearInterval(thisInterval);
+            location.reload();
+          }
+        }, 1000);
+      });
+
+      deleteUser.addEventListener("click", async function () {
+        if (confirm(`Are you secure of delete "${user.name}" user`)) {
+          let body = {
+            deleteUser: true,
+            user: user,
+          };
+          let response = await fetch(
+            `/data?user=${JSON.stringify(user)}`,
+            {
+              method: "delete",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            }
+          );
+
+          let responseJson = await response.json();
+
+          if (responseJson.return == true) {
+            location.href = "/";
+          }
+        }
+      });
+
+
+      //Devices for
+      for (let i in responseJson.devices) {
+        let deviceHtml = document.createElement("tr");
+
+        devicesArray.push({
+          configuration: responseJson.devices[i],
+          html: deviceHtml,
+        });
+
+        devicesArray[i].html.classList.add("table-primary");
+        devicesArray[i].html.innerHTML = `
+                                    <th class="bg-primary" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.name}
+                                        </div>
+                                    </th>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.type}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.protocol}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.direction}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.port}
+                                      </div>
+                                    </td>
+                        `;
+
+        let tdElementAccess = document.createElement("td");
+        let buttonGo = document.createElement("button");
+        buttonGo.innerText = "Go";
+        buttonGo.classList.add("btn");
+        buttonGo.classList.add("btn-dark");
+        buttonGo.style.color = "black";
+        tdElementAccess.appendChild(buttonGo);
+
+        devicesArray[i].html.appendChild(tdElementAccess);
+
+        buttonGo.addEventListener("click", async function () {
+          let interfaceHtml = `index.html?user=${JSON.stringify(user)}`;
+          switch (devicesArray[i].configuration.type) {
+            case "camera":
+              interfaceHtml = `devices/camera.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+            case "fpga":
+              interfaceHtml = `devices/fpga.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+            case "mcu":
+              interfaceHtml = `devices/mcu.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`;
+              break;
+          }
+          window.open(interfaceHtml);
+        });
+
+
+        let tdElementOptions = document.createElement("td");
+
+        let buttonEdit = document.createElement("button");
+        buttonEdit.innerText = "Edit";
+        buttonEdit.classList.add("btn");
+        buttonEdit.classList.add("btn-dark");
+        buttonEdit.style.color = "black";
+        tdElementOptions.appendChild(buttonEdit);
+
+        buttonEdit.addEventListener("click", function () {
+          let thisWindow = window.open(
+            `editDevice.html?device=${JSON.stringify(devicesArray[i].configuration)}&user=${JSON.stringify(user)}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
+        });
+
+        let buttonDelete = document.createElement("button");
+        buttonDelete.innerText = "Delete";
+        buttonDelete.classList.add("btn");
+        buttonDelete.classList.add("btn-dark");
+        buttonDelete.style.color = "black";
+        tdElementOptions.appendChild(buttonDelete);
+
+        devicesArray[i].html.appendChild(tdElementOptions);
+
+        buttonDelete.addEventListener("click", async function () {
+          if (
+            confirm(
+              `Are you secure of delete "${devicesArray[i].configuration.name}" device`
+            )
+          ) {
+            let body = {
+              deleteDevice: true,
+              device: devicesArray[i].configuration,
+            };
+            let response = await fetch(
+              `/data?user=${JSON.stringify(user)}`,
+              {
+                method: "delete",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              }
+            );
+
+            let responseJson = await response.json();
+
+            if (responseJson.return == true) {
+              location.reload();
+            }
+          }
+        });
+
+        devicesList.appendChild(deviceHtml);
+      }
+
+      //Templates for
+      for (let i in responseJson.templates) {
+        let templateHtml = document.createElement("tr");
+
+        templatesArray.push({
+          configuration: responseJson.templates[i],
+          html: templateHtml,
+        });
+
+        //console.log(templatesArray);
+
+        templatesArray[i].html.classList.add("table-primary");
+        templatesArray[i].html.innerHTML = `
+                                    <th class="bg-success" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${templatesArray[i].configuration.name}
+                                        </div>
+                                    </th>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${location.origin}/templates/${templatesArray[i].configuration.endpoint}.html
+                                      </div>
+                                    </td>
+                        `;
+
+        let tdElementAccess = document.createElement("td");
+        let buttonGo = document.createElement("button");
+        buttonGo.innerText = "Go";
+        buttonGo.classList.add("btn");
+        buttonGo.classList.add("btn-dark");
+        buttonGo.style.color = "black";
+        tdElementAccess.appendChild(buttonGo);
+
+        templatesArray[i].html.appendChild(tdElementAccess);
+
+        buttonGo.addEventListener("click", async function () {
+          window.open(
+            `templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}`
+          );
+        });
+
+
+        let tdElementOptions = document.createElement("td");
+
+        let buttonEdit = document.createElement("button");
+        buttonEdit.innerText = "Edit";
+        buttonEdit.classList.add("btn");
+        buttonEdit.classList.add("btn-dark");
+        buttonEdit.style.color = "black";
+        tdElementOptions.appendChild(buttonEdit);
+
+        buttonEdit.addEventListener("click", async function () {
+          let thisWindow = window.open(
+            `editTemplate.html?template=${JSON.stringify(templatesArray[i].configuration)}&user=${JSON.stringify(user)}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
+        });
+
+        let buttonDelete = document.createElement("button");
+        buttonDelete.innerText = "Delete";
+        buttonDelete.classList.add("btn");
+        buttonDelete.classList.add("btn-dark");
+        buttonDelete.style.color = "black";
+        tdElementOptions.appendChild(buttonDelete);
+
+        templatesArray[i].html.appendChild(tdElementOptions);
+
+        buttonDelete.addEventListener("click", async function () {
+          if (
+            confirm(
+              `Are you secure of delete "${templatesArray[i].configuration.name}" template`
+            )
+          ) {
+            let body = {
+              deleteTemplate: true,
+              template: templatesArray[i].configuration,
+            };
+            let response = await fetch(
+              `/data?user=${JSON.stringify(user)}`,
+              {
+                method: "delete",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              }
+            );
+
+            let responseJson = await response.json();
+
+            if (responseJson.return == true) {
+              location.reload();
+            }
+          }
+        });
+
+        templatesList.appendChild(templateHtml);
+      }
+
+
+      
+      //Users for
+      for (let i in responseJson.users) {
+        let userHtml = document.createElement("tr");
+        userHtml.style.borderTop = "solid #000";
+        userHtml.style.borderBottom = "solid #000";
+
+        usersArray.push({
+          configuration: responseJson.users[i],
+          html: userHtml,
+        });
+
+        //console.log(templatesArray);
+
+        usersArray[i].html.classList.add("table-warning");
+        usersArray[i].html.innerHTML = `
+                                    <th class="bg-warning" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.name}
+                                        </div>
+                                    </th>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.password}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.admin}
+                                      </div>
+                                    </td>
+                        `;
+
+      let templatesColumn = document.createElement("td");
+      //console.log(usersArray[i].configuration);
+      if(usersArray[i].configuration.templates.length > 0){
+        for(let templateAssigned of usersArray[i].configuration.templates){
+          let templateDiv = `
+            <div class="bg-success text-white" style="width: 45%; border-radius: 10px; margin-top: 1%; margin-left: 27.5%;">
+              ${templateAssigned.name}
+            </div>
+          `;
+          templatesColumn.innerHTML += templateDiv;
+        }
+      }else if(usersArray[i].configuration.templates.length == 0 && !usersArray[i].configuration.admin) {
+        let templateDiv = `
+            <div class="bg-dark text-white" style="width: 45%; border-radius: 10px; margin-top: 1%; margin-left: 27.5%;">
+              No templates access
+            </div>
+          `;
+          templatesColumn.innerHTML += templateDiv;
+      }
+      
+      if(usersArray[i].configuration.admin){
+        let templateDiv = `
+            <div class="bg-success text-white" style="width: 45%; border-radius: 10px; margin-top: 1%; margin-left: 27.5%;">
+              Access to all templates
+            </div>
+          `;
+          templatesColumn.innerHTML += templateDiv;
+      }
+
+      templatesColumn.innerHTML += "<br>"
+      usersArray[i].html.innerHTML += templatesColumn.innerHTML;
+      usersList.appendChild(userHtml);
+    }
+
+    } else {
+      console.error("recurso no encontrado");
+    }
+  }
+  start();
+</script>

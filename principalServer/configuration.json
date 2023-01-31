@@ -46,6 +46,20 @@
             "start": { "hours": 14, "minutes": 2, "seconds": 56 },
             "end": { "hours": 15, "minutes": 2, "seconds": 56 }
           }
+        },
+        {
+          "name": "templateTwo",
+          "schedule": {
+            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
+            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
+          }
+        },
+        {
+          "name": "templateThree",
+          "schedule": {
+            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
+            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
+          }
         }
       ],
       "admin": false
