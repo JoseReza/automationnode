@@ -1,9 +1,12 @@
-const nodeFetch = require("node-fetch");
-const login = require("./login");
-const time = require("./time");
-const fs = require("fs");
+import * as express from "express";
+import * as login from "./login";
+import * as time from "./time";
+import * as fs from "fs";
 
-function start(app: any) {
+let nodeFetch = require("node-fetch");
+
+export function start(app: any ): any {
+  
   app.get("/camera", login.check, async (request: any, response: any) => {
     console.log("-->", request.query);
     if (request.query) {
@@ -74,5 +77,3 @@ function start(app: any) {
 
   return app;
 }
-
-module.exports = { start };

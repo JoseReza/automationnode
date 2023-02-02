@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 export function check(request: any, response: any, next: any) {
-  //console.log("-->login.check", request.query);
+  console.log("-->login.check", request.query);
   if (request.query.user) {
     let user = JSON.parse(request.query.user);
     let configurationJson = JSON.parse(
@@ -9,6 +9,7 @@ export function check(request: any, response: any, next: any) {
         encoding: "utf-8",
       })
     );
+
     let authenticated = false;
     for (let _user of configurationJson.users) {
       if (authenticated) {

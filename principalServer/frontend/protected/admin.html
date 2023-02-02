@@ -144,6 +144,7 @@
       id="divTemplates">
       <table id="templatesList" class="table table-hover" style="text-align: center; width: 100%;">
         <tr>
+          <th class="bg-success" style="color: white;">Id</th>
           <th class="bg-success" style="color: white;">Name</th>
           <th class="bg-success" style="color: white;">Endpoint</th>
           <th class="bg-success" style="color: white;">Access</th>
@@ -184,6 +185,8 @@
   let divDevices = document.getElementById("divDevices");
   let divTemplates = document.getElementById("divTemplates");
   let divUsers = document.getElementById("divUsers");
+
+  let configurationJson = {};
 
   let devicesArray = [];
   let devicesList = document.getElementById("devicesList");
@@ -255,6 +258,7 @@
       `/configuration.json?user=${JSON.stringify(user)}`
     );
     let responseJson = await responseString.json();
+    configurationJson = responseJson;
 
     if (responseJson["server"]["production"] == false) {
       console.log(user);
@@ -596,9 +600,19 @@
       //console.log(usersArray[i].configuration);
       if(usersArray[i].configuration.templates.length > 0){
         for(let templateAssigned of usersArray[i].configuration.templates){
+          //console.log(templateAssigned);
+      
+          let templateName = "";
+          for(globalTemplate of configurationJson.templates){
+            if(globalTemplate.id == templateAssigned.id){
+              templateName = globalTemplate.name;
+            }
+          }
+          
+
           let templateDiv = `
             <div class="bg-success text-white" style="width: 45%; border-radius: 10px; margin-top: 1%; margin-left: 27.5%;">
-              ${templateAssigned.name}
+              ${templateName}
             </div>
           `;
           templatesColumn.innerHTML += templateDiv;

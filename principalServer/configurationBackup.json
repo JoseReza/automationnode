@@ -1,6 +1,13 @@
 {
-  "server": { "port": 3000, "production": false, "showBrowser": false },
-  "ngrok": { "url": "https://e178-201-146-55-249.ngrok.io" },
+  "server": {
+    "port": 3000,
+    "intervalUpdate": 5000,
+    "production": false,
+    "showBrowser": false
+  },
+  "ngrok": {
+    "url": "https://5747-2806-1016-d-b56f-c688-9497-e4b9-3c5a.ngrok.io"
+  },
   "devices": [
     {
       "name": "device two",
@@ -25,6 +32,13 @@
       "port": "1234",
       "direction": "192.168.1.249",
       "template": 0
+    },
+    {
+      "name": "ejemplo",
+      "type": "fpga",
+      "protocol": "tcp/ip",
+      "direction": "10.104.1.57",
+      "port": "1234"
     }
   ],
   "templates": [{ "name": "templateOne", "endpoint": "templateOne" }],
@@ -39,12 +53,31 @@
             "start": { "hours": 14, "minutes": 2, "seconds": 56 },
             "end": { "hours": 15, "minutes": 2, "seconds": 56 }
           }
+        },
+        {
+          "name": "templateTwo",
+          "schedule": {
+            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
+            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
+          }
+        },
+        {
+          "name": "templateThree",
+          "schedule": {
+            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
+            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
+          }
         }
       ],
       "admin": false
     },
-    { "name": "mario", "password": "password", "templates":[],  "admin": false },
-    { "name": "alan", "password": "password", "templates":[], "admin": false },
-    { "name": "jose", "password": "password", "templates":[], "admin": true }
+    {
+      "name": "mario",
+      "password": "password",
+      "templates": [],
+      "admin": false
+    },
+    { "name": "alan", "password": "password", "templates": [], "admin": false },
+    { "name": "jose", "password": "password", "templates": [], "admin": true }
   ]
 }
