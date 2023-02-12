@@ -17,14 +17,14 @@
         border-radius: 10px;
         margin-top: 5%;
       "
-      class="bg-primary text-white"
+      class="bg-warning text-white"
     >
       <br />
       <h2
         class="bg-dark"
         style="border-radius: 10px; width: 70%; margin-left: 15%"
       >
-        Please enter the new user and password
+        Please enter the new data
       </h2>
       <br />
       <h4
@@ -37,7 +37,7 @@
         "
         class="bg-dark"
       >
-        New user:
+        User Name:
       </h4>
       <input type="text" id="userText" placeholder="user" />
       <br />
@@ -52,13 +52,46 @@
         "
         class="bg-dark"
       >
-        New password:
+        Email:
+      </h4>
+      <input type="text" id="emailText" placeholder="example@company.com" value="example@company.com" />
+      <br />
+      <br />
+      <h4
+        style="
+          border-radius: 10px;
+          color: white;
+          border-radius: 10px;
+          width: 60%;
+          margin-left: 20%;
+        "
+        class="bg-dark"
+      >
+        Password:
       </h4>
       <input type="text" id="passwordText" placeholder="password" />
       <br />
       <br />
+      <h4
+        style="
+          border-radius: 10px;
+          color: white;
+          border-radius: 10px;
+          width: 60%;
+          margin-left: 20%;
+        "
+        class="bg-dark"
+      >
+        Admin:
+      </h4>
+      <div class="bg-dark" style="width: 30%; border-radius: 10px; text-align: center; align-items: center; margin-left: 35%; padding: 1rem;">
+        <input type="checkbox" id="adminCheckbox" style="width: 10%; display: none;" value="false" />
+        <h2 id="divAdmin" style="border-radius: 10px;" class="bg-danger"></h2>
+      </div>
+      <br />
+      <br />
       <button id="addButton" class="btn btn-secondary btn-sm">Add user</button>
-      <button id="buttonCancel" class="btn btn-primary btn-sm">
+      <button id="buttonCancel" class="btn btn-secondary btn-sm">
         Cancel
       </button>
       <br />
@@ -74,20 +107,43 @@
 
   let userText = document.getElementById("userText");
   let passwordText = document.getElementById("passwordText");
+  let emailText = document.getElementById("emailText");
+  let adminCheckbox = document.getElementById("adminCheckbox");
+  let divAdmin = document.getElementById("divAdmin");
   let addButton = document.getElementById("addButton");
   let buttonCancel = document.getElementById("buttonCancel");
+
+  divAdmin.innerText = adminCheckbox.checked;
+  adminCheckbox.addEventListener("change", function(){
+    divAdmin.innerText = adminCheckbox.checked;
+    divAdmin.classList.toggle("bg-success");
+    divAdmin.classList.toggle("bg-danger");
+  });
+
+  divAdmin.addEventListener("click", function(){
+    adminCheckbox.checked = !adminCheckbox.checked;
+    divAdmin.innerText = adminCheckbox.checked;
+    divAdmin.classList.toggle("bg-success");
+    divAdmin.classList.toggle("bg-danger");
+  });
 
   buttonCancel.addEventListener("click", function(){
     window.close();
   });
 
   addButton.addEventListener("click", async function () {
-    if (userText.value != "" && passwordText != "") {
+    if (userText.value != "" && passwordText != "" && emailText != "") {
       let body = {
         saveNewUser: true,
         user: {
+          id: user.id,
           name: userText.value,
-          password: passwordText.value,
+          staticPassword: passwordText.value,
+          dynamicPassword: passwordText.value,
+          email: emailText.value,
+          templates: user.templates,
+          admin: adminCheckbox.checked,
+          authenticated: false
         },
       };
 
@@ -117,6 +173,9 @@
       }
       if (passwordText.value == "") {
         alert("Please put something in password value");
+      }
+      if (emailText.value == "") {
+        alert("Please put something in email value");
       }
     }
   });

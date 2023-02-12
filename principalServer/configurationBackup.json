@@ -1,15 +1,22 @@
 {
   "server": {
     "port": 3000,
-    "intervalUpdate": 5000,
+    "intervalUpdate": 10000,
     "production": false,
-    "showBrowser": false
+    "showBrowser": false,
+    "email": {
+      "user": "automationnodeproject@gmail.com",
+      "password": "abhlhzopygcejtyb",
+      "host": "smtp.gmail.com",
+      "port": 587
+    }
   },
   "ngrok": {
-    "url": "https://5747-2806-1016-d-b56f-c688-9497-e4b9-3c5a.ngrok.io"
+    "url": "https://2b03-2806-1016-d-b56f-7cd5-dfb3-2460-c9f2.ngrok.io"
   },
   "devices": [
     {
+      "id": 0,
       "name": "device two",
       "type": "camera",
       "protocol": "tcp/ip",
@@ -18,6 +25,7 @@
       "template": "template One"
     },
     {
+      "id": 1,
       "name": "testFpga",
       "type": "fpga",
       "protocol": "tcp/ip",
@@ -26,6 +34,7 @@
       "template": 0
     },
     {
+      "id": 2,
       "name": "fpga test",
       "type": "fpga",
       "protocol": "tcp/ip",
@@ -34,6 +43,7 @@
       "template": 0
     },
     {
+      "id": 3,
       "name": "ejemplo",
       "type": "fpga",
       "protocol": "tcp/ip",
@@ -41,43 +51,48 @@
       "port": "1234"
     }
   ],
-  "templates": [{ "name": "templateOne", "endpoint": "templateOne" }],
+  "templates": [
+    { "id": 0, "name": "templateOne", "endpoint": "templateOne" }
+  ],
   "users": [
     {
+      "id": 0,
       "name": "rafael",
-      "password": "password",
-      "templates": [
-        {
-          "name": "templateOne",
-          "schedule": {
-            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
-            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
-          }
-        },
-        {
-          "name": "templateTwo",
-          "schedule": {
-            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
-            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
-          }
-        },
-        {
-          "name": "templateThree",
-          "schedule": {
-            "start": { "hours": 14, "minutes": 2, "seconds": 56 },
-            "end": { "hours": 15, "minutes": 2, "seconds": 56 }
-          }
-        }
-      ],
-      "admin": false
-    },
-    {
-      "name": "mario",
-      "password": "password",
+      "password": "3<>OI6Q0",
       "templates": [],
       "admin": false
     },
-    { "name": "alan", "password": "password", "templates": [], "admin": false },
-    { "name": "jose", "password": "password", "templates": [], "admin": true }
+    {
+      "id": 1,
+      "name": "mario",
+      "password": "7SKSEXO?",
+      "templates": [],
+      "admin": false
+    },
+    {
+      "id": 2,
+      "name": "alan",
+      "email": "l18111721@itcj.edu.mx",
+      "password": "J7Y8U>91",
+      "templates": [],
+      "admin": false
+    },
+    {
+      "id": 3,
+      "name": "jose",
+      "email": "josesotoreza@gmail.com",
+      "password": "1PYMRFIU",
+      "templates": [
+        {
+          "id": 0,
+          "schedule": {
+            "start": { "hours": 23, "minutes": 40, "seconds": 56 },
+            "end": { "hours": 1, "minutes": 44, "seconds": 0 },
+            "sentWarning": false
+          }
+        }
+      ],
+      "admin": true
+    }
   ]
 }

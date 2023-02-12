@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="bootstrap.css" />
     <link rel="icon" href="./icon.png" />
-    <title>Add user</title>
+    <title>Edit template</title>
   </head>
   <body class="bg-dark">
     <div
@@ -17,7 +17,7 @@
         border-radius: 10px;
         margin-top: 5%;
       "
-      class="bg-success text-white"
+      class="bg-white text-white"
     >
       <br />
       <h2
@@ -56,7 +56,7 @@
       <br />
       <br />
       <button id="buttonCancel" class="btn btn-secondary btn-sm">Cancel</button>
-      <button id="addButton" class="btn btn-primary btn-sm">Update template</button>
+      <button id="addButton" class="btn btn-secondary btn-sm">Update template</button>
       <br />
       <br />
     </div>
@@ -115,9 +115,11 @@
         }
 
         if(templateExists){
-            let templateContent = await fetch(`/templates/${template.name}.content.html?user=${JSON.stringify(user)}`);
-            templateContent = await templateContent.text();
-            codeEditor.setValue(templateContent);
+            let templateBase = await fetch(`/templates/${template.name}.html?user=${JSON.stringify(user)}`);
+            templateBase = await templateBase.text();
+            let bodySeparator = templateBase.split("<body>")[1];
+            bodySeparator = bodySeparator.split("</body>")[0];
+            codeEditor.setValue(bodySeparator);
             templateName.value = template.name;
         }else{
             document.body.innerHTML = `
@@ -127,7 +129,8 @@
                 `; 
         }
         
-    }catch{
+    }catch(error){
+        console.error(error);
         document.body.innerHTML = `
         <div style="text-align: center;">
             <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
@@ -149,6 +152,7 @@
         template: {
           name: templateName.value,
           endpoint: templateName.value,
+          id: template.id
         },
       };
 

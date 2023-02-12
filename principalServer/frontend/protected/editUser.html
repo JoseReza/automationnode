@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="icon" href="./icon.png" />
+    <title>Edit user</title>
+  </head>
+  <body class="bg-dark">
+    <div id="principalMenu">
+      <div
+        style="
+          text-align: center;
+          width: 40%;
+          margin-left: 30%;
+          border-radius: 10px;
+          margin-top: 5%;
+        "
+        class="bg-warning text-white"
+      >
+        <br />
+        <h2
+          class="bg-dark"
+          style="border-radius: 10px; width: 70%; margin-left: 15%"
+        >
+          Edit user
+        </h2>
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 40%;
+            margin-left: 30%;
+          "
+          class="bg-dark"
+        >
+          User Name:
+        </h4>
+        <input type="text" id="userText" placeholder="user" />
+        <br />
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 40%;
+            margin-left: 30%;
+          "
+          class="bg-dark"
+        >
+          Email:
+        </h4>
+        <input
+          type="text"
+          id="emailText"
+          placeholder="example@company.com"
+          value="example@company.com"
+        />
+        <br />
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 60%;
+            margin-left: 20%;
+          "
+          class="bg-dark"
+        >
+          Static Password:
+        </h4>
+        <input type="text" id="staticPasswordText" placeholder="password" />
+        <br />
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 40%;
+            margin-left: 30%;
+          "
+          class="bg-dark"
+        >
+          Dynamic Password:
+        </h4>
+        <input type="text" id="dynamicPasswordText" placeholder="password" />
+        <br />
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 40%;
+            margin-left: 30%;
+          "
+          class="bg-dark"
+        >
+          Admin:
+        </h4>
+        <div
+          class="bg-dark"
+          style="
+            width: 30%;
+            border-radius: 10px;
+            text-align: center;
+            align-items: center;
+            margin-left: 35%;
+            padding: 1rem;
+          "
+        >
+          <input
+            type="checkbox"
+            id="adminCheckbox"
+            style="width: 10%; display: none"
+            value="false"
+          />
+          <h2 id="divAdmin" style="border-radius: 10px" class="bg-danger"></h2>
+        </div>
+        <br />
+        <br />
+        <h4
+          style="
+            border-radius: 10px;
+            color: white;
+            border-radius: 10px;
+            width: 60%;
+            margin-left: 20%;
+          "
+          class="bg-dark"
+        >
+          Templates:
+        </h4>
+        <div
+          class="bg-dark"
+          style="
+            width: 70%;
+            border-radius: 10px;
+            text-align: center;
+            align-items: center;
+            margin-left: 15%;
+            padding: 1rem;
+          "
+        >
+          <input
+            type="button"
+            class="btn btn-success btn-sm"
+            value="Add template"
+            style="width: 80%"
+            id="buttonAddTemplate"
+          />
+          <div
+            id="divTemplates"
+            style="border-radius: 10px"
+            class="bg-dark"
+          ></div>
+        </div>
+        <br />
+        <br />
+        <button id="saveButton" class="btn btn-secondary btn-sm">
+          Save user
+        </button>
+        <button id="buttonCancel" class="btn btn-secondary btn-sm">
+          Cancel
+        </button>
+        <br />
+        <br />
+      </div>
+    </div>
+
+    <div
+      id="divAddTemplate"
+      style="
+        display: none;
+        width: 90%;
+        margin-left: 5%;
+        border-radius: 10px;
+        text-align: center;
+        position: absolute;
+        top: 5%;
+        height: 90%;
+      "
+      class="bg-success"
+    >
+      <br />
+      <h2
+        class="bg-dark text-white"
+        style="margin-left: 10%; width: 80%; border-radius: 10px; padding: 1rem"
+      >
+        Choose and option
+      </h2>
+      <br />
+      <div
+        id="divOptionsTemplates"
+        style="overflow-y: scroll; height: 75%"
+      ></div>
+      <button id="buttonCancelAddTemplate" class="btn btn-secondary">
+        Cancel
+      </button>
+    </div>
+  </body>
+</html>
+<script>
+  let url = new URL(location.href);
+  let user = JSON.parse(url.searchParams.get("user"));
+  let password = url.searchParams.get("password");
+  let userToEdit = JSON.parse(url.searchParams.get("userToEdit"));
+  let configurationJson = {};
+
+  let principalMenu = document.getElementById("principalMenu");
+  let divAddTemplate = document.getElementById("divAddTemplate");
+  let buttonAddTemplate = document.getElementById("buttonAddTemplate");
+  let divOptionsTemplates = document.getElementById("divOptionsTemplates");
+  let buttonCancelAddTemplate = document.getElementById(
+    "buttonCancelAddTemplate"
+  );
+
+  start();
+  async function start() {
+    let responseString = await fetch(
+      `/configuration.json?user=${JSON.stringify(user)}`
+    );
+    let responseJson = await responseString.json();
+    configurationJson = responseJson;
+
+    if (responseJson["server"]["production"] == false) {
+      console.log(responseJson);
+    }
+
+    if (responseJson) {
+      renderAddTemplates();
+    }
+  }
+
+  console.log(user);
+  console.log(userToEdit);
+
+  let userText = document.getElementById("userText");
+  let staticPasswordText = document.getElementById("staticPasswordText");
+  let dynamicPasswordText = document.getElementById("dynamicPasswordText");
+  let emailText = document.getElementById("emailText");
+  let adminCheckbox = document.getElementById("adminCheckbox");
+  let divAdmin = document.getElementById("divAdmin");
+  let divTemplates = document.getElementById("divTemplates");
+  let saveButton = document.getElementById("saveButton");
+  let buttonCancel = document.getElementById("buttonCancel");
+
+  if (userToEdit) {
+    userText.value = userToEdit.name;
+    emailText.value = userToEdit.email;
+    staticPasswordText.value = userToEdit.staticPassword;
+    dynamicPasswordText.value = userToEdit.dynamicPassword;
+    adminCheckbox.checked = userToEdit.admin;
+    if (adminCheckbox.checked) {
+      divAdmin.classList.toggle("bg-danger");
+      divAdmin.classList.toggle("bg-success");
+    }
+
+    renderTemplates();
+  } else {
+    console.error("-->Bad user to edit parameters");
+  }
+
+  divAdmin.innerText = adminCheckbox.checked;
+  adminCheckbox.addEventListener("change", function () {
+    divAdmin.innerText = adminCheckbox.checked;
+    divAdmin.classList.toggle("bg-success");
+    divAdmin.classList.toggle("bg-danger");
+  });
+
+  divAdmin.addEventListener("click", function () {
+    adminCheckbox.checked = !adminCheckbox.checked;
+    divAdmin.innerText = adminCheckbox.checked;
+    divAdmin.classList.toggle("bg-success");
+    divAdmin.classList.toggle("bg-danger");
+  });
+
+  buttonCancel.addEventListener("click", function () {
+    window.close();
+  });
+
+  saveButton.addEventListener("click", async function () {
+    if (
+      userText.value != "" &&
+      staticPasswordText.value != "" &&
+      dynamicPasswordText.value != "" &&
+      emailText != ""
+    ) {
+      let newValuesForTemplates = [];
+      for (let template of userToEdit.templates) {
+        template.schedule.start.hours = document.getElementById(
+          `scheduleStartHours${template.id}`
+        ).value;
+        template.schedule.start.minutes = document.getElementById(
+          `scheduleStartMinutes${template.id}`
+        ).value;
+        template.schedule.start.seconds = document.getElementById(
+          `scheduleStartSeconds${template.id}`
+        ).value;
+        template.schedule.end.hours = document.getElementById(
+          `scheduleEndHours${template.id}`
+        ).value;
+        template.schedule.end.minutes = document.getElementById(
+          `scheduleEndMinutes${template.id}`
+        ).value;
+        template.schedule.end.seconds = document.getElementById(
+          `scheduleEndSeconds${template.id}`
+        ).value;
+
+        newValuesForTemplates.push(template);
+      }
+
+      let body = {
+        updateUser: true,
+        user: {
+          id: userToEdit.id,
+          name: userText.value,
+          staticPassword: staticPasswordText.value,
+          dynamicPassword: dynamicPasswordText.value,
+          email: emailText.value,
+          templates: newValuesForTemplates,
+          admin: adminCheckbox.checked,
+          authenticated: false,
+        },
+      };
+
+      let response = await fetch(`/data?user=${JSON.stringify(user)}`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      let responseJson = await response.json();
+      console.log(responseJson);
+
+      if (responseJson.return == true) {
+        alert(`User ${userText.value} added succesfully`);
+        window.close();
+      } else {
+        if (responseJson.data == 0) {
+          alert("User name already exists, please put another");
+        }
+      }
+    } else {
+      if (userText.value == "") {
+        alert("Please put something in user value");
+      }
+      if (staticPasswordText.value == "" || dynamicPasswordText.value == "") {
+        alert("Please put something in password value");
+      }
+      if (emailText.value == "") {
+        alert("Please put something in email value");
+      }
+    }
+  });
+
+  function disableScroll() {
+    scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    window.onscroll = function () {
+      window.scrollTo(scrollLeft, scrollTop);
+    };
+  }
+
+  function enableScroll() {
+    window.onscroll = function () {};
+  }
+
+  function unrenderTemplates() {
+    while (divTemplates.firstChild) {
+      divTemplates.removeChild(divTemplates.lastChild);
+    }
+  }
+
+  function renderTemplates() {
+    for (let template of userToEdit.templates) {
+      divTemplates.innerHTML += `
+        <br>
+            <div style="border-radius:10px;" class="bg-success">
+                <br>
+                <div class="bg-dark" style="margin:1rem; border-radius: 10px; padding: 1rem;">
+                    <h2>Id: ${template.id}</h2>
+                </div>
+                <div>
+                    <div class="bg-dark" style="margin:1rem; border-radius: 10px; padding: 1rem;">
+                        <div>Start</div>
+                        <br>
+                        <label>Hours:</label><input placeholder="0" type="number"  min="0" max="23" value="${template.schedule.start.hours}" style="width:20%;" id="scheduleStartHours${template.id}">
+                        <label>Minutes:</label><input placeholder="0" type="number"  min="0" max="59" value="${template.schedule.start.minutes}" style="width:20%;" id="scheduleStartMinutes${template.id}">
+                        <label>Seconds:</label><input placeholder="0" type="number"  min="0" max="59" value="${template.schedule.start.seconds}" style="width:20%;" id="scheduleStartSeconds${template.id}">
+                    </div>
+                    <div class="bg-dark" style="margin:1rem; border-radius: 10px; padding: 1rem;">
+                        <div>End</div>
+                        <br>
+                        <label>Hours:</label><input placeholder="0" type="number" min="0" max="23" value="${template.schedule.end.hours}" style="width:20%;" id="scheduleEndHours${template.id}">
+                        <label>Minutes:</label><input placeholder="0" type="number" min="0" max="59" value="${template.schedule.end.minutes}" style="width:20%;" id="scheduleEndMinutes${template.id}">
+                        <label>Seconds:</label><input placeholder="0" type="number" min="0" max="59" value="${template.schedule.end.seconds}" style="width:20%;" id="scheduleEndSeconds${template.id}">
+                    </div>
+                    <input type="button" class="btn btn-danger btn-sm" id="buttonDeleteTemplate${template.id}" value="Delete" style="width: 80%;">
+                    <br>
+                    <br>
+                </div>
+            </div>
+        `;
+    }
+
+    for (let template of userToEdit.templates) {
+      let scheduleStartHours = document.getElementById(
+        `scheduleStartHours${template.id}`
+      );
+      let originalValueScheduleStartHours = scheduleStartHours.value;
+      scheduleStartHours.addEventListener("change", function () {
+        if (
+          Number(scheduleStartHours.value) == NaN ||
+          scheduleStartHours.value < 0 ||
+          scheduleStartHours.value >= 24
+        ) {
+          alert("Please enter a valid value");
+          scheduleStartHours.value = originalValueScheduleStartHours;
+        }
+      });
+
+      let scheduleStartMinutes = document.getElementById(
+        `scheduleStartMinutes${template.id}`
+      );
+      let originalValueScheduleStartMinutes = scheduleStartMinutes.value;
+      scheduleStartMinutes.addEventListener("change", function () {
+        if (
+          Number(scheduleStartMinutes.value) == NaN ||
+          scheduleStartMinutes.value < 0 ||
+          scheduleStartMinutes.value >= 60
+        ) {
+          alert("Please enter a valid value");
+          scheduleStartMinutes.value = originalValueScheduleStartMinutes;
+        }
+      });
+
+      let scheduleStartSeconds = document.getElementById(
+        `scheduleStartSeconds${template.id}`
+      );
+      let originalValueScheduleStartSeconds = scheduleStartSeconds.value;
+      scheduleStartSeconds.addEventListener("change", function () {
+        if (
+          Number(scheduleStartSeconds.value) == NaN ||
+          scheduleStartSeconds.value < 0 ||
+          scheduleStartSeconds.value >= 60
+        ) {
+          alert("Please enter a valid value");
+          scheduleStartSeconds.value = originalValueScheduleStartSeconds;
+        }
+      });
+
+      let scheduleEndHours = document.getElementById(
+        `scheduleEndHours${template.id}`
+      );
+      let originalValueScheduleEndHours = scheduleEndHours.value;
+      scheduleEndHours.addEventListener("change", function () {
+        if (
+          Number(scheduleEndHours.value) == NaN ||
+          scheduleEndHours.value < 0 ||
+          scheduleEndHours.value >= 24
+        ) {
+          alert("Please enter a valid value");
+          scheduleEndHours.value = originalValueScheduleEndHours;
+        }
+      });
+
+      let scheduleEndMinutes = document.getElementById(
+        `scheduleEndMinutes${template.id}`
+      );
+      let originalValueScheduleEndMinutes = scheduleEndMinutes.value;
+      scheduleEndMinutes.addEventListener("change", function () {
+        if (
+          Number(scheduleEndMinutes.value) == NaN ||
+          scheduleEndMinutes.value < 0 ||
+          scheduleEndMinutes.value >= 60
+        ) {
+          alert("Please enter a valid value");
+          scheduleEndMinutes.value = originalValueScheduleEndMinutes;
+        }
+      });
+
+      let scheduleEndSeconds = document.getElementById(
+        `scheduleEndSeconds${template.id}`
+      );
+      let originalValueScheduleEndSeconds = scheduleEndSeconds.value;
+      scheduleEndSeconds.addEventListener("change", function () {
+        if (
+          Number(scheduleEndSeconds.value) == NaN ||
+          scheduleEndSeconds.value < 0 ||
+          scheduleEndSeconds.value >= 60
+        ) {
+          alert("Please enter a valid value");
+          scheduleEndSeconds.value = originalValueScheduleEndSeconds;
+        }
+      });
+    }
+  }
+
+  function unrenderAddTemplates() {
+    while (divOptionsTemplates.firstChild) {
+      divOptionsTemplates.removeChild(divOptionsTemplates.lastChild);
+    }
+  }
+
+  function renderAddTemplates() {
+    console.log(userToEdit, configurationJson);
+
+    buttonAddTemplate.addEventListener("click", function () {
+      divAddTemplate.style.display = "block";
+      principalMenu.style.display = "none";
+      disableScroll();
+    });
+    buttonCancelAddTemplate.addEventListener("click", function () {
+      divAddTemplate.style.display = "none";
+      principalMenu.style.display = "block";
+      enableScroll();
+    });
+
+    let userTemplatesIdsSelected = userToEdit.templates.map(({ id }) => id);
+    let showTemplateList = configurationJson.templates.filter((x) => {
+      if (!userTemplatesIdsSelected.includes(x.id)) {
+        return x;
+      }
+    });
+
+    console.log(showTemplateList);
+
+    for (let globalTemplate of showTemplateList) {
+      let divOptionTemplate = document.createElement("div");
+      divOptionTemplate.innerHTML = `
+                        <div class="bg-dark text-white" style="margin-left: 20%; width: 60%; border-radius: 10px; padding: 1rem; ">
+                            Id: ${globalTemplate.id}, Name: ${globalTemplate.name}
+                            <button style="float: right;" id="addTemplate${globalTemplate.id}">Add</button>
+                        </div>
+                        <br>
+                    `;
+      divOptionTemplate.id = `divOptionTemplate${globalTemplate.id}`;
+      divOptionsTemplates.appendChild(divOptionTemplate);
+    }
+    for (let globalTemplate of showTemplateList) {
+      let buttonAddTemplateConfirm = document.getElementById(
+        `addTemplate${globalTemplate.id}`
+      );
+      buttonAddTemplateConfirm.addEventListener("click", function () {
+        userToEdit.templates.push({
+          id: globalTemplate.id,
+          schedule: {
+            start: {
+              hours: 0,
+              minutes: 0,
+              seconds: 0,
+            },
+            end: {
+              hours: 0,
+              minutes: 0,
+              seconds: 0,
+            },
+          },
+        });
+        divAddTemplate.style.display = "none";
+        principalMenu.style.display = "block";
+        unrenderTemplates();
+        setTimeout(renderTemplates, 100);
+        unrenderAddTemplates();
+        setTimeout(renderAddTemplates, 100);
+        enableScroll();
+      });
+    }
+  }
+</script>

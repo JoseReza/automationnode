@@ -1,9 +1,11 @@
+import { user } from "./interfaces";
+
 const fs = require("fs");
 
 export function check(request: any, response: any, next: any) {
   console.log("-->login.check", request.query);
   if (request.query.user) {
-    let user = JSON.parse(request.query.user);
+    let user : user = JSON.parse(request.query.user) as user;
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/../configuration.json", {
         encoding: "utf-8",
@@ -17,7 +19,7 @@ export function check(request: any, response: any, next: any) {
       }
       if (
         user.name == _user.name &&
-        user.password == _user.password
+        (user.dynamicPassword == _user.dynamicPassword || user.staticPassword == _user.staticPassword)
       ) {
 
         authenticated = true;

@@ -73,7 +73,7 @@
     confirmButton.addEventListener("click", async function(){
         let user = {
             name: userText.value,
-            password: passwordText.value
+            staticPassword: passwordText.value
         }
         window.location.href = window.location.origin + `/?user=${JSON.stringify(user)}`; 
     });

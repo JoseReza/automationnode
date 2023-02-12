@@ -18,7 +18,6 @@ let app = express();
 app.use(express.json());
 dotenv.config();
 
-
 //Get configuration json
 
 let configurationJson: configuration = JSON.parse(

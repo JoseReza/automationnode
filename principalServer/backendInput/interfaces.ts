@@ -55,8 +55,11 @@ export interface user {
   id: number;
   name: string;
   email: string;
-  password: string;
+  staticPassword: string;
+  dynamicPassword: string;
   templates: templatesForUser[];
+  admin: boolean;
+  authenticated: boolean;
 }
 
 export interface configuration {

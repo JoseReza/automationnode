@@ -97,10 +97,9 @@
         <button id="closeSession" class="btn btn-secondary btn-sm">
           Log out
         </button>
-        <button id="addUser" class="btn btn-secondary btn-sm">Add user</button>
         <br>
         <br>
-        <button id="deleteUser" class="btn btn-danger btn-sm">Delete my user</button>
+        <button id="deleteUserByMyself" class="btn btn-danger btn-sm">Delete my user</button>
       </div>
 
       <div style="border-radius: 10px; width: 30%; margin-top: 3%; padding: 1%; margin-left: 3%; float: left;"
@@ -120,6 +119,14 @@
         </button>
       </div>
 
+      <div style="border-radius: 10px; width: 30%; margin-top: 1%; padding: 1%; margin-left: 3%; float: left;"
+        class="bg-warning text-white">
+        <h4 style="border-radius: 10px" class="bg-dark">User</h4>
+        <button id="addUser" class="btn btn-secondary btn-sm">
+          Add
+        </button>
+      </div>
+
     </div>
 
 
@@ -127,6 +134,7 @@
       id="divDevices">
       <table id="devicesList" class="table table-hover" style="text-align: center;">
         <tr>
+          <th class="bg-primary" style="color: white">Id</th>
           <th class="bg-primary" style="color: white">Name</th>
           <th class="bg-primary" style="color: white">Type</th>
           <th class="bg-primary" style="color: white">Protocol</th>
@@ -157,10 +165,14 @@
       id="divUsers">
       <table id="usersList" class="table table-hover" style="text-align: center;">
         <tr>
+          <th class="bg-warning" style="color: white">Id</th>
           <th class="bg-warning" style="color: white">Name</th>
-          <th class="bg-warning" style="color: white">Password</th>
+          <th class="bg-warning" style="color: white">Email</th>
+          <th class="bg-warning" style="color: white">Static Password</th>
+          <th class="bg-warning" style="color: white">Dynamic Password</th>
           <th class="bg-warning" style="color: white">Admin</th>
           <th class="bg-warning" style="color: white">Templates</th>
+          <th class="bg-warning" style="color: white">Options</th>
         </tr>
       </table>
     </div>
@@ -200,7 +212,7 @@
 
   let addUser = document.getElementById("addUser");
   let addNewTemplate = document.getElementById("addNewTemplate");
-  let deleteUser = document.getElementById("deleteUser");
+  let deleteUserByMyself = document.getElementById("deleteUserByMyself");
   let closeSession = document.getElementById("closeSession");
   let userNameText = document.getElementById("userNameText");
   userNameText.innerHTML = user.name;
@@ -302,10 +314,10 @@
         }, 1000);
       });
 
-      deleteUser.addEventListener("click", async function () {
+      deleteUserByMyself.addEventListener("click", async function () {
         if (confirm(`Are you secure of delete "${user.name}" user`)) {
           let body = {
-            deleteUser: true,
+            deleteUserByMyself: true,
             user: user,
           };
           let response = await fetch(
@@ -340,6 +352,11 @@
 
         devicesArray[i].html.classList.add("table-primary");
         devicesArray[i].html.innerHTML = `
+                                    <th class="bg-primary" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${devicesArray[i].configuration.id}
+                                        </div>
+                                    </th>
                                     <th class="bg-primary" style="color: white;">
                                         <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
                                           ${devicesArray[i].configuration.name}
@@ -472,12 +489,17 @@
         templatesArray[i].html.innerHTML = `
                                     <th class="bg-success" style="color: white;">
                                         <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${templatesArray[i].configuration.id}
+                                        </div>
+                                    </th>
+                                    <th class="bg-success" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
                                           ${templatesArray[i].configuration.name}
                                         </div>
                                     </th>
                                     <td>
                                       <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
-                                          ${location.origin}/templates/${templatesArray[i].configuration.endpoint}.html
+                                          ${configurationJson.ngrok.url}/templates/${templatesArray[i].configuration.endpoint}.html
                                       </div>
                                     </td>
                         `;
@@ -497,6 +519,24 @@
             `templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}`
           );
         });
+
+        if(location.hostname == "localhost"){
+          let buttonGo = document.createElement("button");
+          buttonGo.style.marginLeft = "1rem";
+          buttonGo.innerText = "Go public";
+          buttonGo.classList.add("btn");
+          buttonGo.classList.add("btn-dark");
+          buttonGo.style.color = "black";
+          tdElementAccess.appendChild(buttonGo);
+
+          templatesArray[i].html.appendChild(tdElementAccess);
+
+          buttonGo.addEventListener("click", async function () {
+            window.open(
+              `${configurationJson.ngrok.url}/templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}`
+            );
+          });
+        }
 
 
         let tdElementOptions = document.createElement("td");
@@ -581,12 +621,27 @@
         usersArray[i].html.innerHTML = `
                                     <th class="bg-warning" style="color: white;">
                                         <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.id}
+                                        </div>
+                                    </th>
+                                    <th class="bg-warning" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
                                           ${usersArray[i].configuration.name}
+                                        </div>
+                                    </th>
+                                    <th class="bg-warning" style="color: white;">
+                                        <div class="bg-dark" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.email}
                                         </div>
                                     </th>
                                     <td>
                                       <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
-                                          ${usersArray[i].configuration.password}
+                                          ${usersArray[i].configuration.staticPassword}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                          ${usersArray[i].configuration.dynamicPassword}
                                       </div>
                                     </td>
                                     <td>
@@ -637,6 +692,67 @@
 
       templatesColumn.innerHTML += "<br>"
       usersArray[i].html.innerHTML += templatesColumn.innerHTML;
+
+      let tdElementOptions = document.createElement("td");
+
+        let buttonEdit = document.createElement("button");
+        buttonEdit.innerText = "Edit";
+        buttonEdit.classList.add("btn");
+        buttonEdit.classList.add("btn-dark");
+        buttonEdit.style.color = "black";
+        tdElementOptions.appendChild(buttonEdit);
+
+        buttonEdit.addEventListener("click", function () {
+          let thisWindow = window.open(
+            `editUser.html?user=${JSON.stringify(user)}&userToEdit=${JSON.stringify(usersArray[i].configuration)}`
+          );
+          let thisInterval = setInterval(function () {
+            if (thisWindow.closed) {
+              clearInterval(thisInterval);
+              location.reload();
+            }
+          }, 1000);
+        });
+
+        let buttonDelete = document.createElement("button");
+        buttonDelete.innerText = "Delete";
+        buttonDelete.classList.add("btn");
+        buttonDelete.classList.add("btn-dark");
+        buttonDelete.style.color = "black";
+        tdElementOptions.appendChild(buttonDelete);
+
+        usersArray[i].html.appendChild(tdElementOptions);
+
+        buttonDelete.addEventListener("click", async function () {
+          if (
+            confirm(
+              `Are you secure of delete "${usersArray[i].configuration.name}" user`
+            )
+          ) {
+            let body = {
+              deleteUser: true,
+              user: usersArray[i].configuration,
+            };
+            let response = await fetch(
+              `/data?user=${JSON.stringify(user)}`,
+              {
+                method: "delete",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              }
+            );
+
+            let responseJson = await response.json();
+
+            if (responseJson.return == true) {
+              location.reload();
+            }
+          }
+        });
+
       usersList.appendChild(userHtml);
     }
 
