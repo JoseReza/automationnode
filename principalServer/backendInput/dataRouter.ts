@@ -2,6 +2,7 @@ import * as express from "express";
 import * as login from "./login";
 import * as fs from "fs";
 import { configuration, device, template, user } from "./interfaces";
+import * as password from "./password";
 
 export function start(app: any): any{
     app.put("/data", login.check, async (request: any, response: any) => {
@@ -49,6 +50,7 @@ export function start(app: any): any{
             console.log("-->user:", user)
             user.templates = [];
             user.id = Math.max(...ids) + 1;
+            user.dynamicPassword = password.generateNewPassword();
             configurationJson.users.push(user);
             fs.writeFileSync(
               __dirname + "/../configuration.json",
@@ -203,6 +205,27 @@ export function start(app: any): any{
               { encoding: "utf-8" }
             );
 
+            request.body.return = true;
+          }
+          if(request.body.generateNewDynamicPassword == true){
+            let user: user = request.body.user as user;
+            let configurationJson : configuration = JSON.parse(
+              fs.readFileSync(__dirname + "/../configuration.json", {
+                encoding: "utf-8",
+              })
+            );
+            //let updatedUser: user;
+            for(let index in configurationJson.users){
+              if(configurationJson.users[index].id == user.id){
+                configurationJson.users[index].dynamicPassword = password.generateNewPassword();
+                request.body.user = configurationJson.users[index];
+              }
+            }
+            fs.writeFileSync(
+              __dirname + "/../configuration.json",
+              JSON.stringify(configurationJson),
+              { encoding: "utf-8" }
+            );
             request.body.return = true;
           }
         } catch (error) {

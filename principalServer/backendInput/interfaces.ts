@@ -49,6 +49,7 @@ export interface schedule {
 export interface templatesForUser {
   id: number;
   schedule: schedule;
+  enabledNotification?: boolean;
 }
 
 export interface user {

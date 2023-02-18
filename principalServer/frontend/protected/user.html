@@ -1,12 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    This is an user view
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="bootstrap.css" />
+    <link rel="shortcut icon" href="./icon.png" type="image/x-icon" />
+    <title>User access</title>
+  </head>
+  <body>
+    <div
+      id="userData"
+      style="
+        margin-left: 3rem;
+        margin-top: 3rem;
+        margin-right: 3rem;
+        padding: 2rem;
+        border-radius: 10px;
+        min-height: 10rem;
+      "
+      class="bg-dark text-white"
+    ></div>
+    <div id="divTemplates"></div>
+  </body>
 </html>
+<script>
+  start();
+  async function start() {
+    let url = new URL(location.href);
+    let user = JSON.parse(url.searchParams.get("user"));
+    let _user = JSON.parse(url.searchParams.get("user"));
+    let configurationJson = {};
+    _user.authenticated = true;
+    console.log(_user);
+
+    let divTemplates = document.getElementById("divTemplates");
+    let userData = document.getElementById("userData");
+
+    async function checkAuth() {
+      let response = await fetch(
+        location.origin + `/loginCheck?user=${JSON.stringify(_user)}`
+      );
+      response = await response.text();
+      try {
+        response = JSON.parse(response);
+        if (typeof response == "object") {
+          location.reload();
+        }
+      } catch {
+        location.href = location.origin + `/login.html`;
+      }
+    }
+    setInterval(checkAuth, 60000);
+
+    //userData.innerHTML = JSON.stringify(user);
+    userData.innerHTML = `
+    <div style="float: left; margin: 0.5rem;">
+      <img src="./ncie.png" style="width: 5rem; border-radius: 25%;" alt="Avatar">
+    </div>
+    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-primary">
+        <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-dark">
+            My id is ${user.id}
+        </div>
+    </div>
+    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-primary">
+        <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-dark">
+            Logged as ${user.name}
+        </div>
+    </div>
+    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: right;" class="bg-danger">
+        <button style="margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" id="logoutButton" class="btn btn-danger">Log out</button>
+    </div>
+  `;
+
+    let logoutButton = document.getElementById("logoutButton");
+    logoutButton.addEventListener("click", function () {
+      location.href = location.origin + "/login.html";
+    });
+
+    let responseString = await fetch(
+      `/configuration.json?user=${JSON.stringify(_user)}`
+    );
+    configurationJson = await responseString.json();
+
+    for (let globalUser of configurationJson.users) {
+      if (globalUser.id == user.id) {
+        user = globalUser;
+      }
+    }
+
+    if (user.templates.length > 0) {
+      for (let localTemplate of user.templates) {
+        for (let globalTemplate of configurationJson.templates) {
+          if (localTemplate.id == globalTemplate.id) {
+            let divTemplate = document.createElement("div");
+            divTemplate.innerHTML += `
+                    <div style="margin: 3rem; padding: 3rem; border-radius: 10px; text-align: center; float: left;" class="bg-primary text-white">
+                        <div style="left: 0; width: 4rem; border-radius: 10px;" class="bg-warning">${globalTemplate.id}</div>
+                        <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem;" class="bg-dark">
+                            <h3>${globalTemplate.name}</h3>
+                        </div>
+                        <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem;" class="bg-dark">
+                            <button id="buttonAccess${globalTemplate.id}" class="btn btn-warning">Access</button>
+                        </div>
+                        <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem;" class="bg-dark">
+                            <h4>Start</h4>
+                            ${localTemplate.schedule.start.hours}:${localTemplate.schedule.start.minutes}:${localTemplate.schedule.start.seconds}
+                        </div>
+                        <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem;" class="bg-dark">
+                            <h4>End</h4>
+                            ${localTemplate.schedule.end.hours}:${localTemplate.schedule.end.minutes}:${localTemplate.schedule.end.seconds}
+                        </div>
+                        <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem; text-align: center;" class="bg-dark">
+                            <h4>Enabled Notification?</h4>
+                            <div id="enabledNotification${globalTemplate.id}" style="border-radius: 10px; margin: 0.5rem; width: 6rem; cursor: pointer;" class="bg-danger mx-auto">
+                                False
+                            </div>
+                        </div>
+                    </div>
+                `;
+            divTemplates.appendChild(divTemplate);
+            let buttonAccess = document.getElementById(
+              `buttonAccess${globalTemplate.id}`
+            );
+            buttonAccess.addEventListener("click", function () {
+              user.authenticated = true;
+              window.open(
+                `${window.location.origin}/templates/${
+                  globalTemplate.endpoint
+                }.html?user=${JSON.stringify(user)}`
+              );
+            });
+
+            let enabledNotification = document.getElementById(
+              `enabledNotification${globalTemplate.id}`
+            );
+            enabledNotification.addEventListener("click", async function () {
+              for (let index in user.templates) {
+                if (globalTemplate.id == user.templates[index].id) {
+                  user.templates[index].enabledNotification =
+                    !user.templates[index].enabledNotification;
+                }
+              }
+              let body = {
+                user: user,
+                updateUser: true,
+              };
+              user.authenticated = true;
+              let response = await fetch(
+                `/data?user=${JSON.stringify(_user)}`,
+                {
+                  method: "post",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(body),
+                }
+              );
+              response = await response.json();
+              console.log(response);
+              if (response.return) {
+                for (let index in user.templates) {
+                  if (globalTemplate.id == user.templates[index].id) {
+                    if (user.templates[index].enabledNotification) {
+                      enabledNotification.innerText = "True";
+                      enabledNotification.classList.toggle("bg-success");
+                      enabledNotification.classList.toggle("bg-danger");
+                    } else {
+                      enabledNotification.innerText = "False";
+                      enabledNotification.classList.toggle("bg-success");
+                      enabledNotification.classList.toggle("bg-danger");
+                    }
+                  }
+                }
+              } else {
+                console.error(response);
+              }
+            });
+            if (localTemplate.enabledNotification) {
+              enabledNotification.innerText = "True";
+              enabledNotification.classList.toggle("bg-success");
+              enabledNotification.classList.toggle("bg-danger");
+            }
+          }
+        }
+      }
+    } else {
+      divTemplates.innerHTML = `
+        <div style="text-align: center;" class="text-white">
+            <h2 style="border-radius: 10px; margin: 4%; padding: 4%" class="bg-dark">
+                It seems you don't have templates assigned, please request to your team to acces to any template
+            </h2>
+        </div>
+        `;
+    }
+  }
+</script>

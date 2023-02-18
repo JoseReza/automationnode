@@ -5,7 +5,7 @@ const fs = require("fs");
 export function check(request: any, response: any, next: any) {
   console.log("-->login.check", request.query);
   if (request.query.user) {
-    let user : user = JSON.parse(request.query.user) as user;
+    let user: user = JSON.parse(request.query.user) as user;
     let configurationJson = JSON.parse(
       fs.readFileSync(__dirname + "/../configuration.json", {
         encoding: "utf-8",
@@ -18,10 +18,10 @@ export function check(request: any, response: any, next: any) {
         continue;
       }
       if (
-        user.name == _user.name &&
-        (user.dynamicPassword == _user.dynamicPassword || user.staticPassword == _user.staticPassword)
+        (user.name == _user.name || user.name == _user.email) &&
+        (user.dynamicPassword == _user.dynamicPassword ||
+          user.staticPassword == _user.staticPassword)
       ) {
-
         authenticated = true;
         if (user.authenticated) {
           next();
@@ -35,16 +35,18 @@ export function check(request: any, response: any, next: any) {
             response.redirect(`/admin.html?user=${JSON.stringify(user)}`);
           } else {
             _user.admin = undefined;
+            user.id = _user.id;
             response.redirect(`/user.html?user=${JSON.stringify(user)}`);
           }
-          
         }
-
       }
     }
 
     if (!authenticated) {
-      console.log("-->Rejected: User is not in configuration.json :", request.query);
+      console.log(
+        "-->Rejected: User is not in configuration.json :",
+        request.query
+      );
       response.redirect(`/login.html`);
     }
   } else {

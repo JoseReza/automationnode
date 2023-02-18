@@ -263,7 +263,7 @@
       divAdmin.classList.toggle("bg-success");
     }
 
-    renderTemplates();
+    setTimeout(renderTemplates, 500);
   } else {
     console.error("-->Bad user to edit parameters");
   }
@@ -341,10 +341,10 @@
       });
 
       let responseJson = await response.json();
-      console.log(responseJson);
+      //console.log(responseJson);
 
       if (responseJson.return == true) {
-        alert(`User ${userText.value} added succesfully`);
+        alert(`User ${userText.value} updated succesfully`);
         window.close();
       } else {
         if (responseJson.data == 0) {
@@ -384,12 +384,21 @@
 
   function renderTemplates() {
     for (let template of userToEdit.templates) {
+
+        let name = "";
+        for(let globalTemplate of configurationJson.templates){
+            if(globalTemplate.id == template.id){
+                name = globalTemplate.name;
+            }
+        }
+
       divTemplates.innerHTML += `
         <br>
             <div style="border-radius:10px;" class="bg-success">
                 <br>
                 <div class="bg-dark" style="margin:1rem; border-radius: 10px; padding: 1rem;">
                     <h2>Id: ${template.id}</h2>
+                    <h2>Id: ${name}</h2>
                 </div>
                 <div>
                     <div class="bg-dark" style="margin:1rem; border-radius: 10px; padding: 1rem;">
@@ -504,6 +513,18 @@
           scheduleEndSeconds.value = originalValueScheduleEndSeconds;
         }
       });
+      let buttonDeleteTemplate = document.getElementById(`buttonDeleteTemplate${template.id}`);
+      buttonDeleteTemplate.addEventListener("click", function(){
+        for(let index in userToEdit.templates){
+            if(userToEdit.templates[index].id == template.id){
+                userToEdit.templates.splice(index, 1);
+            }
+            unrenderTemplates();
+            renderTemplates();
+            unrenderAddTemplates();
+            renderAddTemplates();
+        }
+      });
     }
   }
 
@@ -514,7 +535,7 @@
   }
 
   function renderAddTemplates() {
-    console.log(userToEdit, configurationJson);
+    //console.log(userToEdit, configurationJson);
 
     buttonAddTemplate.addEventListener("click", function () {
       divAddTemplate.style.display = "block";
@@ -534,7 +555,7 @@
       }
     });
 
-    console.log(showTemplateList);
+    //console.log(showTemplateList);
 
     for (let globalTemplate of showTemplateList) {
       let divOptionTemplate = document.createElement("div");
@@ -566,7 +587,9 @@
               minutes: 0,
               seconds: 0,
             },
+            sentWarning: false,
           },
+          enabledNotification: true
         });
         divAddTemplate.style.display = "none";
         principalMenu.style.display = "block";

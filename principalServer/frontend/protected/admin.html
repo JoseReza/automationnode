@@ -640,9 +640,12 @@
                                       </div>
                                     </td>
                                     <td>
-                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
+                                      <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;" id="divDynamicPassword${usersArray[i].configuration.id}">
                                           ${usersArray[i].configuration.dynamicPassword}
                                       </div>
+                                      <button style="margin-bottom: 1rem; background-color: red; border-radius: 10px; color: white;" class="btn" id="buttonGenerateNewPassword${usersArray[i].configuration.id}">
+                                        Generate new password
+                                      </button>
                                     </td>
                                     <td>
                                       <div class="bg-dark text-white" style="width: 70%; border-radius: 10px; margin: 2%; margin-left: 15%;">
@@ -752,6 +755,39 @@
             }
           }
         });
+
+        setTimeout(function(){
+          let buttonGenerateNewPassword = document.getElementById(`buttonGenerateNewPassword${usersArray[i].configuration.id}`);
+        let divDynamicPassword = document.getElementById(`divDynamicPassword${usersArray[i].configuration.id}`);
+
+        buttonGenerateNewPassword.addEventListener("click", async function(){
+          let confirm = window.confirm(`Are you secure to generate new password for user ${usersArray[i].configuration.name}`);
+          if(confirm){
+            let body = {
+              generateNewDynamicPassword: true,
+              user: usersArray[i].configuration,
+            };
+            let response = await fetch(
+              `/data?user=${JSON.stringify(user)}`,
+              {
+                method: "post",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+              }
+            );
+
+            let responseJson = await response.json();
+
+            if (responseJson.return == true) {
+              console.log(responseJson);
+              divDynamicPassword.innerHTML = responseJson.user.dynamicPassword;
+            }
+          }
+        });
+        }, 100);
 
       usersList.appendChild(userHtml);
     }

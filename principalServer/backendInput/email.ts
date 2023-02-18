@@ -34,6 +34,8 @@ export async function sendMailForTemplate(user: user, template: templatesForUser
 
     let link = `${configurationJson.ngrok.url}/templates/${foundedTemplate.endpoint}.html?user={"name": "${user.name}", "password": "${user.staticPassword}", "authenticated": true}`;
 
+    console.log(link);
+
     let info = await transporter.sendMail({
         from: "Virtual Laboratory",
         to: user.email,
@@ -44,7 +46,7 @@ export async function sendMailForTemplate(user: user, template: templatesForUser
             has been assigned to you in this time in this <a href='${link}'>link</a> url.
             <br>
             You got until ⌚${template.schedule.end.hours}:${template.schedule.end.minutes}:${template.schedule.end.seconds}
-             to complete your tasks.
+             to complete your task
         `,
     });
     console.log("-->Email sent: ", info.messageId);

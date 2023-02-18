@@ -1,7 +1,4 @@
-//checar usuarios eliminar y actualizar
 //checar dispositivos agregar, eliminar y actualizar
-//relacion de usuarios con templates
 //relacion de dispositivos con templates
-//al momento de crear template agregar bandera si va a ser publico o privado
 //al momento de crear template agregar arreglo de dispositivos asigandos
 //agregar plantillas bases en templates

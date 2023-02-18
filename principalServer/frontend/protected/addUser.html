@@ -54,7 +54,12 @@
       >
         Email:
       </h4>
-      <input type="text" id="emailText" placeholder="example@company.com" value="example@company.com" />
+      <input
+        type="text"
+        id="emailText"
+        placeholder="example@company.com"
+        value="example@company.com"
+      />
       <br />
       <br />
       <h4
@@ -84,16 +89,29 @@
       >
         Admin:
       </h4>
-      <div class="bg-dark" style="width: 30%; border-radius: 10px; text-align: center; align-items: center; margin-left: 35%; padding: 1rem;">
-        <input type="checkbox" id="adminCheckbox" style="width: 10%; display: none;" value="false" />
-        <h2 id="divAdmin" style="border-radius: 10px;" class="bg-danger"></h2>
+      <div
+        class="bg-dark"
+        style="
+          width: 30%;
+          border-radius: 10px;
+          text-align: center;
+          align-items: center;
+          margin-left: 35%;
+          padding: 1rem;
+        "
+      >
+        <input
+          type="checkbox"
+          id="adminCheckbox"
+          style="width: 10%; display: none"
+          value="false"
+        />
+        <h2 id="divAdmin" style="border-radius: 10px" class="bg-danger"></h2>
       </div>
       <br />
       <br />
       <button id="addButton" class="btn btn-secondary btn-sm">Add user</button>
-      <button id="buttonCancel" class="btn btn-secondary btn-sm">
-        Cancel
-      </button>
+      <button id="buttonCancel" class="btn btn-secondary btn-sm">Cancel</button>
       <br />
       <br />
     </div>
@@ -114,20 +132,20 @@
   let buttonCancel = document.getElementById("buttonCancel");
 
   divAdmin.innerText = adminCheckbox.checked;
-  adminCheckbox.addEventListener("change", function(){
+  adminCheckbox.addEventListener("change", function () {
     divAdmin.innerText = adminCheckbox.checked;
     divAdmin.classList.toggle("bg-success");
     divAdmin.classList.toggle("bg-danger");
   });
 
-  divAdmin.addEventListener("click", function(){
+  divAdmin.addEventListener("click", function () {
     adminCheckbox.checked = !adminCheckbox.checked;
     divAdmin.innerText = adminCheckbox.checked;
     divAdmin.classList.toggle("bg-success");
     divAdmin.classList.toggle("bg-danger");
   });
 
-  buttonCancel.addEventListener("click", function(){
+  buttonCancel.addEventListener("click", function () {
     window.close();
   });
 
@@ -143,7 +161,7 @@
           email: emailText.value,
           templates: user.templates,
           admin: adminCheckbox.checked,
-          authenticated: false
+          authenticated: false,
         },
       };
 
@@ -162,8 +180,8 @@
       if (responseJson.return == true) {
         alert(`User ${userText.value} added succesfully`);
         window.close();
-      }else{
-        if(responseJson.data == 0){ 
+      } else {
+        if (responseJson.data == 0) {
           alert("User name already exists, please put another");
         }
       }
