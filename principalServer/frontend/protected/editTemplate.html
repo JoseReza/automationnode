@@ -12,10 +12,10 @@
     <div
       style="
         text-align: center;
-        width: 90%;
-        margin-left: 5%;
+        width: 95%;
+        margin-left: 2.5%;
         border-radius: 10px;
-        margin-top: 5%;
+        margin-top: 2.5%;
       "
       class="bg-white text-white"
     >
@@ -24,39 +24,57 @@
         class="bg-dark"
         style="border-radius: 10px; width: 40%; margin-left: 30%"
       >
-        Template
+        Edit Template
       </h2>
       <br />
       <h4
-        style="
-          margin-left: 5%;
-          color: white;
-          width: 30%;
-          float: left;
-        "
+        style="margin-left: 5%; color: white; width: 30%; float: left; border-radius: 10px;"
         class="bg-dark"
       >
         Name:
-    </h4>
-      <input type="text" id="templateName" placeholder="template name" style="float: left; width: 60%;" />
-      <div style="clear: both;"></div>
+      </h4>
+      <input
+        type="text"
+        id="templateName"
+        placeholder="template name"
+        style="float: left; width: 60%; margin-left: 2rem;"
+      />
+      <br>
+      <div style="clear: both"></div>
       <div
         id="codeEditor"
         style="
           position: relative;
           width: 45%;
           margin-left: 5%;
-          height: 35rem;
+          height: 40rem;
           border: 1px;
           float: left;
         "
       ></div>
-      <div id="codeEditorResult" style="float: left; width: 45%; height: 35rem; text-align: left;" class="bg-white text-dark"></div>
-      <div style="clear: both;"></div>
+      <div
+        id="codeEditorResult"
+        style="float: left; width: 45%; height: 25rem; text-align: left"
+        class="bg-white text-dark"
+      ></div>
+      <div
+        id="divConsole"
+        style="
+          float: left;
+          width: 45%;
+          height: 15rem;
+          text-align: left;
+          border-radius: 10px;
+        "
+      ></div>
+      <div style="clear: both"></div>
       <br />
       <br />
-      <button id="buttonCancel" class="btn btn-secondary btn-sm">Cancel</button>
-      <button id="addButton" class="btn btn-secondary btn-sm">Update template</button>
+      <button id="buttonRender" class="btn btn-success btn-sm">Render</button>
+      <button id="buttonCancel" class="btn btn-secondary btn-sm">Close</button>
+      <button id="addButton" class="btn btn-primary btn-sm">
+        Save template
+      </button>
       <br />
       <br />
     </div>
@@ -66,6 +84,8 @@
 <script src="./aceEditor/mode-html.js"></script>
 <script src="./aceEditor/theme-chrome.js"></script>
 <script src="./aceEditor/ext-language_tools.js"></script>
+<script src="/console.js"></script>
+<script src="/utils.js"></script>
 <script>
   var codeEditor = ace.edit("codeEditor");
   codeEditor.setTheme("ace/theme/chrome");
@@ -76,13 +96,12 @@
     enableLiveAutocompletion: true,
   });
 
-  
   let url = new URL(location.href);
   let user = JSON.parse(url.searchParams.get("user"));
   let template = undefined;
-  try{
+  try {
     template = JSON.parse(url.searchParams.get("template"));
-  }catch{
+  } catch {
     document.body.innerHTML = `
     <div style="text-align: center;">
         <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
@@ -93,45 +112,59 @@
   let codeEditorResult = document.getElementById("codeEditorResult");
   let addButton = document.getElementById("addButton");
   let buttonCancel = document.getElementById("buttonCancel");
+  let buttonRender = document.getElementById("buttonRender");
 
   codeEditor.setValue("<h1>hello world!!</h1>");
   codeEditorResult.innerHTML = codeEditor.getValue();
 
-  codeEditor.addEventListener("change", function(){
+  function renderHtml() {
     codeEditorResult.innerHTML = codeEditor.getValue();
+    let scripts = codeEditorResult.getElementsByTagName("script");
+    for (let script of scripts) {
+      eval(script.innerText);
+    }
+  }
+
+  setTimeout(renderHtml, 500);
+  buttonRender.addEventListener("click", () => {
+    console.clear();
+    renderHtml();
   });
 
-  async function start(){
-    try{
-        let configurationJson = await fetch(`/configuration.json?user=${JSON.stringify(user)}`);
-        configurationJson = await configurationJson.json();
+  async function start() {
+    try {
+      let configurationJson = await fetch(
+        `/configuration.json?user=${JSON.stringify(user)}`
+      );
+      configurationJson = await configurationJson.json();
 
-        let templateExists = false;
-        for(let _template of configurationJson.templates){
-            if(_template.name == template.name){
-                templateExists = true;
-                template = _template;
-            }
+      let templateExists = false;
+      for (let _template of configurationJson.templates) {
+        if (_template.name == template.name) {
+          templateExists = true;
+          template = _template;
         }
+      }
 
-        if(templateExists){
-            let templateBase = await fetch(`/templates/${template.name}.html?user=${JSON.stringify(user)}`);
-            templateBase = await templateBase.text();
-            let bodySeparator = templateBase.split("<body>")[1];
-            bodySeparator = bodySeparator.split("</body>")[0];
-            codeEditor.setValue(bodySeparator);
-            templateName.value = template.name;
-        }else{
-            document.body.innerHTML = `
+      if (templateExists) {
+        let templateBase = await fetch(
+          `/templates/${template.name}.html?user=${JSON.stringify(user)}`
+        );
+        templateBase = await templateBase.text();
+        let bodySeparator = templateBase.split("<body>")[1];
+        bodySeparator = bodySeparator.split("</body>")[0];
+        codeEditor.setValue(bodySeparator);
+        templateName.value = template.name;
+      } else {
+        document.body.innerHTML = `
             <div style="text-align: center;">
                 <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
             </div>
-                `; 
-        }
-        
-    }catch(error){
-        console.error(error);
-        document.body.innerHTML = `
+                `;
+      }
+    } catch (error) {
+      console.error(error);
+      document.body.innerHTML = `
         <div style="text-align: center;">
             <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%;" class="bg-secondary text-dark">Template does not exists</h2>
         </div>
@@ -152,7 +185,7 @@
         template: {
           name: templateName.value,
           endpoint: templateName.value,
-          id: template.id
+          id: template.id,
         },
       };
 
@@ -170,7 +203,6 @@
 
       if (responseJson.return == true) {
         alert(`Template ${templateName.value} updated succesfully`);
-        window.close();
       } else {
         if (responseJson.data == 0) {
           alert("template name already exists, please put another");

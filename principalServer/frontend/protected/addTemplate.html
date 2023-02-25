@@ -12,51 +12,69 @@
     <div
       style="
         text-align: center;
-        width: 90%;
-        margin-left: 5%;
+        width: 95%;
+        margin-left: 2.5%;
         border-radius: 10px;
-        margin-top: 5%;
+        margin-top: 2.5%;
       "
-      class="bg-success text-white"
+      class="bg-secondary text-white"
     >
       <br />
       <h2
         class="bg-dark"
         style="border-radius: 10px; width: 40%; margin-left: 30%"
       >
-        Template
+        Add New Template
       </h2>
       <br />
       <h4
-        style="
-          margin-left: 5%;
-          color: white;
-          width: 30%;
-          float: left;
-        "
+        style="margin-left: 5%; color: white; width: 30%; float: left; border-radius: 10px;"
         class="bg-dark"
       >
         Name:
-    </h4>
-      <input type="text" id="templateName" placeholder="template name" style="float: left; width: 60%;" />
-      <div style="clear: both;"></div>
+      </h4>
+      <input
+        type="text"
+        id="templateName"
+        placeholder="template name"
+        style="float: left; width: 60%; margin-left: 2rem;"
+      />
+      <br>
+      <div style="clear: both"></div>
       <div
         id="codeEditor"
         style="
           position: relative;
           width: 45%;
           margin-left: 5%;
-          height: 35rem;
+          height: 40rem;
           border: 1px;
           float: left;
         "
       ></div>
-      <div id="codeEditorResult" style="float: left; width: 45%; height: 35rem; text-align: left;" class="bg-white text-dark"></div>
-      <div style="clear: both;"></div>
+      <div
+        id="codeEditorResult"
+        style="float: left; width: 45%; height: 25rem; text-align: left"
+        class="bg-white text-dark"
+      ></div>
+      <div
+        id="divConsole"
+        style="
+          float: left;
+          width: 45%;
+          height: 15rem;
+          text-align: left;
+          border-radius: 10px;
+        "
+      ></div>
+      <div style="clear: both"></div>
       <br />
       <br />
-      <button id="addButton" class="btn btn-secondary btn-sm">Add template</button>
+      <button id="buttonRender" class="btn btn-success btn-sm">Render</button>
       <button id="buttonCancel" class="btn btn-secondary btn-sm">Cancel</button>
+      <button id="addButton" class="btn btn-primary btn-sm">
+        Add template
+      </button>
       <br />
       <br />
     </div>
@@ -66,6 +84,8 @@
 <script src="./aceEditor/mode-html.js"></script>
 <script src="./aceEditor/theme-chrome.js"></script>
 <script src="./aceEditor/ext-language_tools.js"></script>
+<script src="/console.js"></script>
+<script src="/utils.js"></script>
 <script>
   var codeEditor = ace.edit("codeEditor");
   codeEditor.setTheme("ace/theme/chrome");
@@ -76,20 +96,30 @@
     enableLiveAutocompletion: true,
   });
 
-  
   let url = new URL(location.href);
   let user = JSON.parse(url.searchParams.get("user"));
   let templateName = document.getElementById("templateName");
   let codeEditorResult = document.getElementById("codeEditorResult");
   let addButton = document.getElementById("addButton");
   let buttonCancel = document.getElementById("buttonCancel");
-  
-  codeEditor.setValue("<h1>hello world!!</h1>");
+  let buttonRender = document.getElementById("buttonRender");
+
+  codeEditor.setValue(initContentTemplate);
   codeEditorResult.innerHTML = codeEditor.getValue();
 
-  codeEditor.addEventListener("change", function(){
+  function renderHtml() {
     codeEditorResult.innerHTML = codeEditor.getValue();
-  })
+    let scripts = codeEditorResult.getElementsByTagName("script");
+    for (let script of scripts) {
+      eval(script.innerText);
+    }
+  }
+
+  setTimeout(renderHtml, 500);
+  buttonRender.addEventListener("click", () => {
+    console.clear();
+    renderHtml();
+  });
 
   buttonCancel.addEventListener("click", function () {
     window.close();

@@ -6,42 +6,44 @@ import * as fs from "fs";
 
 let transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
-export function start(configurationJson:configuration){
-    transporter = nodemailer.createTransport({
-        host: configurationJson.server.email.host,
-        port: 465,
-        secure: true,
-        auth: {
-          user: configurationJson.server.email.user,
-          pass: configurationJson.server.email.password,
-        },
-    });
+export function start(configurationJson: configuration) {
+  transporter = nodemailer.createTransport({
+    host: configurationJson.server.email.host,
+    port: 465,
+    secure: true,
+    auth: {
+      user: configurationJson.server.email.user,
+      pass: configurationJson.server.email.password,
+    },
+  });
 }
 
-export async function sendMailForTemplate(user: user, template: templatesForUser, configurationJson: configuration){
-
+export async function sendMailForTemplate(
+  user: user,
+  template: templatesForUser,
+  configurationJson: configuration
+) {
+  try {
     let foundedTemplate: template = {
-        id: 0,
-        name: "",
-        endpoint: ""
+      id: 0,
+      name: "",
+      endpoint: "",
     };
 
-    for(let globalTemplate of configurationJson.templates){
-        if(template.id == globalTemplate.id){
-            foundedTemplate = globalTemplate;
-        }
+    for (let globalTemplate of configurationJson.templates) {
+      if (template.id == globalTemplate.id) {
+        foundedTemplate = globalTemplate;
+      }
     }
 
     let link = `${configurationJson.ngrok.url}/templates/${foundedTemplate.endpoint}.html?user={"name": "${user.name}", "password": "${user.staticPassword}", "authenticated": true}`;
-
-    console.log(link);
-
+    console.log("-->Sending email to: ", user.email);
     let info = await transporter.sendMail({
-        from: "Virtual Laboratory",
-        to: user.email,
-        subject: "⌚ Email From Virtual Lab",
-        //text: user.password,
-        html: `
+      from: "Virtual Laboratory",
+      to: user.email,
+      subject: "⌚ Email From Virtual Lab",
+      //text: user.password,
+      html: `
             🟩 Your template "${foundedTemplate.name}" 
             has been assigned to you in this time in this <a href='${link}'>link</a> url.
             <br>
@@ -50,4 +52,7 @@ export async function sendMailForTemplate(user: user, template: templatesForUser
         `,
     });
     console.log("-->Email sent: ", info.messageId);
+  } catch (error) {
+    console.error(error);
+  }
 }

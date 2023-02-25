@@ -16,12 +16,9 @@ app.use(express.json());
 async function start() {
   ngrok.authtoken(String(process.env.authtoken));
   let ngrokForFpgaIde = await ngrok.connect(Number(process.env.fpga_ide_port));
+  console.log("-->FpgaServer ngrokUrl:", ngrokForFpgaIde);
 
   await serialListener.start();
-
-  app.get("/publicUrl", async (request: any, response: any) => {
-    response.send(ngrokForFpgaIde);
-  });
 
   app.post("/data", async (request: any, response: any) => {
     console.log(request.body);
@@ -37,7 +34,7 @@ async function start() {
       };
       request.body.return = true;
     }
-    if (request.body.getIdeUrl == true) {
+    if (request.body.getPublicUrl == true) {
       request.body.data = ngrokForFpgaIde;
       request.body.return = true;
     }

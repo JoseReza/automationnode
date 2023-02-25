@@ -6,11 +6,12 @@ import * as email from "./email";
 import * as login from "./login";
 import * as dotenv from "dotenv";
 import * as ngrok from "ngrok";
+import fetch from "node-fetch";
 import * as fs from "fs";
 import * as os from "os";
 
 import express from "express";
-import { configuration } from "./interfaces";
+import { configuration, petition } from "./interfaces";
 
 //Boot
 express;
@@ -68,6 +69,29 @@ app.get("/configuration.json", login.check, (request: any, response: any) => {
   );
 });
 
+app.post("/petition", login.check, async (request: any, response: any) => {
+  console.log(request.body);
+  try{
+    let petition: petition = request.body.petition as petition;
+    let response = await fetch(petition.url, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(petition.body),
+      method: petition.method
+    });
+    request.body.data = await response.text();;
+    request.body.return = true;
+  }catch(error){
+    console.error(error);
+    request.body.data = error;
+    request.body.return = false;
+  }
+
+  response.send(request.body);
+});
+
 app = dataRouter.start(app);
 app = deviceRouter.start(app);
 
@@ -90,7 +114,7 @@ app.listen(Number(configurationJson["server"]["port"]), async () => {
       authtoken: process.env.authtoken,
     });
     configurationJson["ngrok"]["url"] = ngrokUrl;
-    console.log("ngrokUrl: ", ngrokUrl);
+    console.log("-->principalServer ngrokUrl:", ngrokUrl);
     fs.writeFileSync(
       `${__dirname}/../configuration.json`,
       JSON.stringify(configurationJson),

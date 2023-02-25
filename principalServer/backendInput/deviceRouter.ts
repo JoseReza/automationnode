@@ -1,9 +1,8 @@
 import * as express from "express";
 import * as login from "./login";
 import * as time from "./time";
+import fetch from "node-fetch";
 import * as fs from "fs";
-
-let nodeFetch = require("node-fetch");
 
 export function start(app: any ): any {
   
@@ -19,7 +18,7 @@ export function start(app: any ): any {
         //console.log("llega aqui 0");
 
         try {
-          data = await nodeFetch(`http://${device.direction}/capture`);
+          data = await fetch(`http://${device.direction}/capture`);
           data = await data.blob();
           //console.log(data);
         } catch {
@@ -29,7 +28,7 @@ export function start(app: any ): any {
         }
 
         try {
-          data = Buffer.from(await data.arrayBuffer());
+          data = Buffer.from(await data.text());
           //console.log("-->arrayData:", data);
           data = data.toString("base64");
           base64 = "data:image/png;base64," + data;
@@ -53,7 +52,7 @@ export function start(app: any ): any {
 
     try {
       if (request.body.getReadings == true) {
-        request.body.data = await nodeFetch(
+        request.body.data = await fetch(
           `http://${request.body.device.direction}:${request.body.device.port}/data`,
           {
             method: "post",
@@ -63,6 +62,23 @@ export function start(app: any ): any {
             },
             body: JSON.stringify({
               getReadings: true,
+            }),
+          }
+        );
+        request.body.data = request.body.data.json();
+        request.body.return = true;
+      }
+      if (request.body.getPublicUrl == true) {
+        request.body.data = await fetch(
+          `http://${request.body.device.direction}:${request.body.device.port}/data`,
+          {
+            method: "post",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              getPublicUrl: true,
             }),
           }
         );

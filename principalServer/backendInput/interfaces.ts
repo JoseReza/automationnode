@@ -71,3 +71,11 @@ export interface configuration {
   users: user[];
 }
 
+
+
+export interface petition {
+  url: string;
+  method: petitionMethods;
+  body: any;
+}
+
