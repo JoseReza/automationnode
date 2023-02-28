@@ -9,39 +9,78 @@
     <title>fpgaOneTemplate</title>
   </head>
   <script src="/utils.js"></script>
-  <body>
-<div id="template">
-    <h1>Hello World!!</h1>
-</div>
-  <script>
-    let template = document.getElementById("template");
-    console.log(template);
-    console.log("Hello World!!");
-      
-      async function start(){
-          let request = await Utils().fetchInnerNetwork(
-              "http://127.0.0.1:5000/data", 
-                "post",
-                {
-                    getPublicUrl: true
-                }
-          );
-          if(request.return){
-              console.log(request.data);
-              let response = JSON.parse(request.data); //Este parse fue porque es 
-                                                        //es un dispositivo de 
-                                                        //Automation Node
-              if(response.return){
+  <body><render></render>
+<script>
+
+    let ip = "127.0.0.1";
+
+    async function start(){
+        
+        let render = await utils.getRender();
+        let user = await utils.getUser();
+        let configuration = await utils.getConfiguration();
+        
+        let request = await utils.fetch(
+            `http://${ip}:5000/data`, 
+            "post",
+            {
+                getPublicUrl: true
+            }
+        );
+        if(request.return){
+            let response = JSON.parse(request.data); //Este parse fue porque es 
+                                                    //es un dispositivo de 
+                                                    //Automation Node
+            if(response.return){
                 let fpgaUrl = response.data;
                 console.log(fpgaUrl);
-                template.innerHTML += `<a href="${fpgaUrl}"> fpga ide </a>`;
-              }
-          }else{
-              console.error("Fallo el request");
-          }
+                let divFpgaUrl = document.createElement("div");
+                divFpgaUrl.innerHTML = fpgaUrl;
+                divFpgaUrl.classList.add("bg-dark");
+                divFpgaUrl.style.color = "white";
+                divFpgaUrl.style.textAlign = "center";
+                divFpgaUrl.style.borderRadius = "10px";
+                render.appendChild(divFpgaUrl);
+            }
+        }else{
+                console.error("Request failed: Fpga device disconnected.");
+        }
+        
+        let deviceIframe = document.createElement("iframe");
+        deviceIframe.setAttribute(
+            "src", location.origin + "/devices/fpga.html?user=" + 
+            JSON.stringify(user) 
+            + "&&device=" + 
+            JSON.stringify(configuration.devices[0])
+        );
+        deviceIframe.style.width = "100%";
+        deviceIframe.style.height = "40rem";
+        //deviceIframe.setAttribute("scrolling", "yes");
+        deviceIframe.style.marginLeft = "5%";
+        render.appendChild(deviceIframe);
+          
       }
       start();
   </script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   </body>
 </html>

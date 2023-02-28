@@ -1,12 +1,30 @@
+let utils = Utils();
+
 function Utils() {
   return {
+
+    getConfiguration: async function(){
+      let url = new URL(location.href);
+      let user = JSON.parse(url.searchParams.get("user"));
+      let configurationJson = await fetch(`/configuration.json?user=${JSON.stringify(user)}`);
+      return await configurationJson.json();
+    },
+    getUser: async function(){
+      let url = new URL(location.href);
+      let user = JSON.parse(url.searchParams.get("user"));
+      return user;
+    },
+    getRender: async function(){
+      return document.getElementsByTagName("render")[0];
+    },
+
     wait: async function (delay) {
       await new Promise((resolve) => {
         setTimeout(resolve, delay);
       });
     },
 
-    fetchInnerNetwork: async function (
+    fetch: async function (
       url,
       method = undefined,
       body = undefined
@@ -62,7 +80,7 @@ function showInfo() {
   console.extraInfo("Available functions:");
   JSON.stringify(Utils(), function (key, val) {
     if (typeof val === "function") {
-      console.extraInfo(`--> Utils().${key}`);
+      console.extraInfo(`--> utils.${key}() : async function`);
     }
     return val;
   });
@@ -71,9 +89,9 @@ function showInfo() {
 showInfo();
 
 const initContentTemplate = `
-<div id="template"></div>
+<render></render>
 <script>
-    let template = document.getElementById("template");
-    template.innerHTML = '<h1>This is a new template!!</h1>';
+    let render = utils.getRender();
+    render.innerHTML = '<h1>This is a new template!!</h1>';
     console.log("Hello world!!");
 </script>`;

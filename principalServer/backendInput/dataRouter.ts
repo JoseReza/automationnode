@@ -16,7 +16,7 @@ export function start(app: any): any{
                 encoding: "utf-8",
               })
             );
-            let ids: number[] = [];
+            let ids: number[] = [0];
             for(let device of configurationJson.devices){
               ids.push(device.id);
             }
@@ -43,7 +43,7 @@ export function start(app: any): any{
                 return;
               }
             }
-            let ids: number[] = [];
+            let ids: number[] = [0];
             for(let user of configurationJson.users){
               ids.push(user.id);
             }
@@ -77,7 +77,7 @@ export function start(app: any): any{
                 return;
               }
             }
-            let ids: number[] = [];
+            let ids: number[] = [0];
             for(let template of configurationJson.templates){
               ids.push(template.id);
             }
