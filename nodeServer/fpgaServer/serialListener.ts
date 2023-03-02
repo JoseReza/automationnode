@@ -1,11 +1,15 @@
 const { SerialPort } = require("serialport");
 
-let readings = {};
+export let readings = {};
 
 export async function start() {
+  
+  let path = "COM5";
+
   let portList = await SerialPort.list();
+  console.log(portList);
+
   try {
-    let path = portList[0].path;
     const port = new SerialPort({ path: path, baudRate: 115200 });
 
     let data = "";
@@ -23,6 +27,7 @@ export async function start() {
         }
       }
       if (currentMessage != lastMessage) {
+        console.log(currentMessage);
         lastMessage = currentMessage;
         message = currentMessage;
         let myJson: any = undefined;

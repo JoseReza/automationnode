@@ -38,32 +38,33 @@ async function start() {
       request.body.data = ngrokForFpgaIde;
       request.body.return = true;
     }
+    console.log(request.body)
     response.send(request.body);
   });
 
   app.listen(process.env.port, function () {
     console.log("Server is ready on port: ", process.env.port);
     if (os.platform() == "win32") {
-      if (process.env.production == "true") {
+      if (process.env.production == "true" && process.env.show_browser == "true") {
         childProcess.exec(
           `start msedge --kiosk http://localhost:${Number(
             process.env.port
           )} --edge-kiosk-type=fullscreen`
         );
-      } else {
+      } else if(process.env.show_browser == "true"){
         childProcess.exec(
           `start msedge http://localhost:${Number(process.env.port)}`
         );
       }
     }
     if (os.platform() == "linux") {
-      if (process.env.production == "true") {
+      if (process.env.production == "true" && process.env.show_browser == "true") {
         childProcess.exec(
           `chromium-browser http://localhost:${Number(
             process.env.port
           )} --kiosk`
         );
-      } else {
+      } else if(process.env.show_browser == "true"){
         childProcess.exec(
           `chromium-browser http://localhost:${Number(process.env.port)}`
         );

@@ -75,7 +75,7 @@ function Utils() {
   };
 }
 
-function showInfo() {
+async function showInfo() {
   console.log("Automation Node", "----------------------------------------");
   console.extraInfo("Available functions:");
   JSON.stringify(Utils(), function (key, val) {
@@ -85,6 +85,11 @@ function showInfo() {
     return val;
   });
   console.log("----------------------------------------");
+  let configuration = await utils.getConfiguration();
+  console.extraInfo("Available devices:");
+  for(let device of configuration.devices){
+    console.extraInfo(JSON.stringify(device));
+  }
 }
 showInfo();
 

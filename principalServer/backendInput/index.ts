@@ -89,6 +89,7 @@ app.post("/petition", login.check, async (request: any, response: any) => {
     request.body.return = false;
   }
 
+  console.log(request.body);
   response.send(request.body);
 });
 

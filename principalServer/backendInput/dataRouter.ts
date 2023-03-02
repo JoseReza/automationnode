@@ -116,6 +116,7 @@ export function start(app: any): any{
         } catch (error) {
           console.error(error);
         }
+        console.log(request.body);
         response.send(request.body);
       });
       
@@ -231,6 +232,7 @@ export function start(app: any): any{
         } catch (error) {
           console.error(error);
         }
+        console.log(request.body);
         response.send(request.body);
       });
       
@@ -317,6 +319,7 @@ export function start(app: any): any{
         } catch (error) {
           console.error(error);
         }
+        console.log(request.body);
         response.send(request.body);
       });
 

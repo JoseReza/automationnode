@@ -1,91 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="deviceNameTitle">Fpga</title>
+    <link rel="icon" href="./../icon.png" />
+    <link rel="stylesheet" href="./../bootstrap.css" />
+    <link rel="stylesheet" href="./fpga.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title id="deviceNameTitle">Fpga</title>
-  <link rel="icon" href="./../icon.png" />
-  <link rel="stylesheet" href="./../bootstrap.css" />
-  <link rel="stylesheet" href="./fpga.css">
-</head>
-
-<body style="overflow-y: hidden">
-  <br />
-  <div id="deviceNotConnected" style="display: none; vertical-align: middle;">
-    <h2 style="margin-top: 10%; margin-left: 25%; border-radius: 10px; padding: 1%; width: 50%; text-align: center;"
-      class="bg-dark text-white">Device Not Connected</h2>
-  </div>
-  <div id="content" style="display: block;">
-    <div style="align-items: center; text-align: center; margin-left: 15%">
-      <div class="bg-dark text-white" style="
-            width: 25%;
-            margin-left: 5%;
-            border-radius: 10px;
-            vertical-align: middle;
-            padding: 1%;
-            float: left;
-          " class="bg-secondary text-dark">
-        <img id="logo" src="./../icon.png" width="50" height="50" />
-        <div>Automation Node</div>
-      </div>
-      <div class="bg-dark text-white" style="
-            width: 30%;
-            margin-left: 5%;
-            border-radius: 10px;
-            vertical-align: middle;
-            margin: 3%;
-            padding: 1%;
-            float: left;
-          " class="bg-secondary text-dark">
-        <h3 id="deviceName">Fpga</h3>
-      </div>
-      <div id="buttonCancel" class="bg-dark text-white" style="
-            float: left;
-            margin-left: 2%;
-            margin-top: 4%;
-            border-radius: 10px;
-            padding: 1%;
-          ">
-        go back
-      </div>
-      <div style="clear: both"></div>
+  <body>
+    <br />
+    <div id="deviceNotConnected" style="display: none; vertical-align: middle">
+      <h2
+        style="
+          margin-top: 10%;
+          margin-left: 25%;
+          border-radius: 10px;
+          padding: 1%;
+          width: 50%;
+          text-align: center;
+        "
+        class="bg-dark text-white"
+      >
+        Device Not Connected
+      </h2>
     </div>
-
-    <div class="bg-dark text-white" style="
+    <div id="content" style="display: block">
+      <div
+        class="bg-dark text-white"
+        style="
           text-align: center;
           width: 20%;
           margin-left: 5%;
           border-radius: 10px;
           padding: 1%;
+          margin-top: 5rem;
           position: fixed;
-          margin-top: 0;
-        ">
-      <div style="margin: 1%">
-        <div class="bg-primary" style="width: 80%; margin-left: 10%; border-radius: 10px">
-          <label>Interval lecture (ms)</label>
+        "
+      >
+        <div style="margin: 1%">
+          <div
+            class="bg-primary"
+            style="width: 80%; margin-left: 10%; border-radius: 10px"
+          >
+            <label>Interval lecture (ms)</label>
+          </div>
+          <br />
+          <input
+            id="inputInterval"
+            type="number"
+            min="1"
+            max="30000"
+            value="1000"
+          />
+          <br />
+          <br />
+          <div
+            class="bg-primary"
+            style="width: 80%; margin-left: 10%; border-radius: 10px"
+          >
+            <label>Length horizontal readings</label>
+          </div>
+          <br />
+          <input id="inputLength" type="number" min="1" max="500" value="100" />
         </div>
         <br />
-        <input id="inputInterval" type="number" min="1" max="30000" value="1000" />
-        <br />
-        <br />
-        <div class="bg-primary" style="width: 80%; margin-left: 10%; border-radius: 10px">
-          <label>Length horizontal readings</label>
+        <div style="margin: 1%">
+          <button id="buttonResume" class="btn btn-success btn-sm">
+            Resume
+          </button>
+          <button id="buttonPause" class="btn btn-danger btn-sm">Pause</button>
         </div>
-        <br />
-        <input id="inputLength" type="number" min="1" max="500" value="100" />
       </div>
-      <br />
-      <div style="margin: 1%">
-        <button id="buttonResume" class="btn btn-success btn-sm">Resume</button>
-        <button id="buttonPause" class="btn btn-danger btn-sm">Pause</button>
-      </div>
+      <div
+        id="charts"
+        style="width: 65%; margin-left: 30%; position: absolute; margin-top: 5rem;"
+      ></div>
     </div>
-    <div id="charts" style="width: 65%; margin-left: 30%"></div>
-  </div>
-</body>
-
+  </body>
 </html>
-<script src="./../chart.js"></script>
-<script src="./fpga.js" type="module"></script>
+<script src="/chart.js"></script>
+<script src="/console.js"></script>
+<script src="/utils.js"></script>
+<script type="module">
+  import * as time from "./../time.js";
+
+  let deviceNotConnected = document.getElementById("deviceNotConnected");
+  let content = document.getElementById("content");
+  let inputInterval = document.getElementById("inputInterval");
+  let inputLength = document.getElementById("inputLength");
+  let buttonResume = document.getElementById("buttonResume");
+  let buttonPause = document.getElementById("buttonPause");
+  let charts = document.getElementById("charts");
+
+  let limitChartReadings = 100;
+  let timeToUpdate = 1000;
+  let pinArray = [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+  ];
+  let chartArray = [];
+  let chartInstanceArray = [];
+  let arraysAxisX = [];
+  let arraysAxisY = [];
+  let running = true;
+
+  let urlParams = new URLSearchParams(window.location.search);
+  let user = JSON.parse(urlParams.get("user"));
+  console.log(user);
+  let device = JSON.parse(urlParams.get("device"));
+  console.log(device);
+
+  async function start() {
+    if (device) {
+      let request = await utils.fetch(
+        `http://${device.direction}:${device.port}/data`,
+        "post",
+        {
+          getPublicUrl: true,
+        }
+      );
+      if (request.return) {
+        let response = JSON.parse(request.data); //Este parse fue porque es
+        //es un dispositivo de
+        //Automation Node
+        if (response.return) {
+          let fpgaUrl = response.data;
+          console.log(fpgaUrl);
+          let divFpgaUrl = document.createElement("div");
+          divFpgaUrl.innerHTML = fpgaUrl;
+          divFpgaUrl.classList.add("bg-dark");
+          divFpgaUrl.style.color = "white";
+          divFpgaUrl.style.textAlign = "center";
+          divFpgaUrl.style.position = "fixed";
+          divFpgaUrl.style.width = "100%";
+          divFpgaUrl.style.top = "0";
+          document.body.appendChild(divFpgaUrl);
+          document.body.appendChild(document.createElement("br"));
+        }
+      } else {
+        console.error("Request failed: Fpga device disconnected.");
+      }
+
+      inputInterval.addEventListener("change", function () {
+        if (Number(inputInterval.value) != NaN) {
+          timeToUpdate = Number(inputInterval.value);
+        } else {
+          alert("Please put a number");
+        }
+      });
+
+      inputLength.addEventListener("change", function () {
+        if (Number(inputLength.value) != NaN) {
+          limitChartReadings = Number(inputLength.value);
+        } else {
+          alert("Please put a number");
+        }
+      });
+
+      buttonResume.addEventListener("click", function () {
+        running = true;
+        loop();
+      });
+
+      buttonPause.addEventListener("click", function () {
+        running = false;
+      });
+
+      for (let pin of pinArray) {
+        let chart = document.createElement("canvas");
+        chart.style.width = "70%";
+        charts.appendChild(chart);
+        chartArray.push(chart);
+        let arrayAxisX = [];
+        let arrayAxisY = [];
+        arraysAxisX.push(arrayAxisX);
+        arraysAxisY.push(arrayAxisY);
+
+        let chartInstance = new Chart(chart, {
+          type: "line",
+          data: {
+            labels: arrayAxisX,
+            datasets: [
+              {
+                label: pin,
+                data: arrayAxisY,
+                backgroundColor: "rgba(54, 162, 235, 0.2)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 5,
+                suggestedMax: 500,
+              },
+            },
+          },
+        });
+
+        chartInstance.options.animation = false; // disables all animations
+
+        chartInstanceArray.push(chartInstance);
+      }
+
+      async function loop() {
+        deviceNotConnected.style.display = "none";
+        content.style.display = "block";
+
+        let body = {
+          getReadings: true,
+          device: device,
+        };
+
+        let data = await utils.fetch(
+          `http://${device.direction}:${device.port}/data`,
+          "post",
+          {
+            getReadings: true,
+          }
+        );
+
+        console.log(data);
+        if (data.return == false) {
+          running = false;
+          deviceNotConnected.style.display = "block";
+          content.style.display = "none";
+          setTimeout(function () {
+            location.reload();
+          }, 60000);
+        } else {
+          data = JSON.parse(data.data).data;
+          console.log(data);
+        }
+
+        await time.wait(timeToUpdate);
+
+        const currentDate = new Date();
+        let xAxisLabel = `${currentDate.getMinutes()}:${currentDate.getSeconds()}:${currentDate.getMilliseconds()}`;
+
+        for (let index in pinArray) {
+          arraysAxisX[index].push(xAxisLabel);
+          if (pinArray[index][0] == "A" || pinArray[index][0] == "a") {
+            arraysAxisY[index].push((data[pinArray[index]] / 1024) * 5); //Analogo
+          } else {
+            arraysAxisY[index].push(data[pinArray[index]] * 5); //Digital
+          }
+
+          if (
+            arraysAxisX[index].length >= limitChartReadings &&
+            arraysAxisY[index].length >= limitChartReadings
+          ) {
+            arraysAxisX[index].shift();
+            arraysAxisY[index].shift();
+          }
+          chartInstanceArray[index].update();
+        }
+
+        if (running) {
+          return await loop();
+        }
+      }
+      loop();
+    } else {
+      deviceNotConnected.style.display = "block";
+      content.style.display = "none";
+    }
+  }
+  start();
+</script>
