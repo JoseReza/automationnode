@@ -5,32 +5,61 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="deviceNameTitle">Camera</title>
-    <link rel="icon" href="unprotected/icon.png">
-    <link rel="stylesheet" href="unprotected/bootstrap.css">
-    <link rel="stylesheet" href="unprotected/camera.css">
+    <link rel="icon" href="/icon.png">
+    <link rel="stylesheet" href="/bootstrap.css">
+    <style>
+      button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+#logo {
+    position: relative;
+    animation-name: animationLogo;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes animationLogo {
+    0% {
+        transform: rotate(0deg);
+    }
+    33% {
+        transform: rotate(120deg);
+    }
+    66% {
+        transform: rotate(240deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+    </style>
   </head>
   <body>
     <br>
-    <div style="align-items: center; text-align: center; margin-left: 15%;">
-
+    <div>
                 <div 
                 class="bg-dark text-white"
-                style="width: 25%; margin-left: 5%; border-radius: 10px; vertical-align: middle; padding: 1%; float: left;" class="bg-secondary text-dark">
-                    <img id="logo" src="unprotected/icon.png" width="50" height="50">
-                    <div>Automation Node</div>
-                </div>
-                <div 
-                class="bg-dark text-white"
-                style="width: 30%; margin-left: 5%; border-radius: 10px; vertical-align: middle; margin: 3%; padding: 1%; float: left;" class="bg-secondary text-dark">
+                style="width: 90%; margin-left: 5%; border-radius: 10px; vertical-align: middle; padding: 1%; float: left;" class="bg-secondary text-dark">
+                  <div class="bg-secondary text-dark" style="float: left; margin-left: 4%; width: 5rem; border-radius: 10px; text-align: center; align-items: center;">
+                    <img id="logo" src="/icon.png" style="float: left; margin: 1rem; width: 3rem;">
+                  </div>
+                  <div class="bg-secondary text-dark" style="float: left; margin-left: 8%; width: 50%; border-radius: 10px; text-align: center;">
                     <h3 id="deviceName">Camera streaming</h3>
+                  </div>
+                  <div id="buttonCancel" class="btn btn-secondary text-dark" style="float: right; margin-left: 4%;">go back</div>
+                  <div style="clear: both;"></div>
                 </div>
-                <div id="buttonCancel" class="bg-dark text-white" style="float: left; margin-left: 2%; margin-top: 4%; border-radius: 10px; padding: 1%;">go back</div>
-                <div style="clear: both;"></div>
     </div>
 
+    <br>
+    <br>
+
     <div
+        id="divCamera"
         class="bg-dark text-white" 
-        style="width: 70%; height: 400px; margin-left: 15%; border-radius: 10px; text-align: center; align-items: center;"
+        style="width: 90%; margin-left: 5%; border-radius: 10px; text-align: center; align-items: center;"
     >
         <div class="bg-primary">Streaming obtained</div>
         <div id="deviceNotConnected" style="display: none; vertical-align: middle;">
@@ -38,19 +67,10 @@
         </div>
         <img id="video" style="width: 100%; height: 95%;"></img>
     </div>
-
-    <div style="width: 100%;">
-        <div 
-            class="bg-dark text-white"
-            style="width: 70%; margin-left: 15%; border-radius: 10px; vertical-align: middle; padding: 1%; float: left; margin-top: 1%; text-align: center;" class="bg-secondary text-dark">
-            <h4>Public endpoint</h4>
-            <input type="text" id="publicEndPoint" style="width: 40%;"></input>
-            <button id="copy" class="btn btn-primary btn-sm" style="width: 10%;">copy</button>
-        </div>
-    </div>
-
   </body>
-
+  <div id="divConsole" style="display: none;"></div>
+  <script src="/console.js"></script>
+<script src="/utils.js"></script>
 </html>
 <script type="module">
     let deviceName = document.getElementById("deviceName");
@@ -58,8 +78,9 @@ let deviceNameTitle = document.getElementById("deviceNameTitle");
 let deviceNotConnected = document.getElementById("deviceNotConnected");
 let buttonCancel = document.getElementById("buttonCancel");
 let video = document.getElementById("video");
-let publicEndPoint = document.getElementById("publicEndPoint");
-let copy = document.getElementById("copy");
+let divCamera = document.getElementById("divCamera");
+
+divCamera.style.height = `${window.innerHeight*(7/10)}px`;
 
 let urlParams = new URLSearchParams(window.location.search);
 let user = JSON.parse(urlParams.get("user"));
@@ -70,48 +91,44 @@ console.log(device);
 deviceName.innerText = device.name;
 deviceNameTitle.innerText = device.name;
 
-publicEndPoint.value = `${location.origin}/camera?user=${JSON.stringify(
-  user
-)}&device=${JSON.stringify(device)}`;
-copy.addEventListener("click", async function () {
-  await navigator.clipboard.writeText(publicEndPoint.value);
-  copy.classList.toggle("btn-primary");
-  copy.classList.toggle("btn-success");
-  copy.innerHTML = "copied";
-  setTimeout(() => {
-    copy.classList.toggle("btn-primary");
-    copy.classList.toggle("btn-success");
-    copy.innerHTML = "copy";
-  }, 5000);
-});
-
 buttonCancel.addEventListener("click", function () {
   window.close();
 });
 
 let interval = undefined;
 
-async function start() {
-  interval = setInterval(async function () {
-    let response = await fetch(
-      `${location.origin}/camera?user=${JSON.stringify(
-        user
-      )}&device=${JSON.stringify(device)}`
-    );
-    response = await response.json();
+async function loop() {
+  try{
+    let response = await new Promise((resolve, reject)=>{
+      utils.fetch(`http://${device.direction}:${device.port}/capture`,"get",).then((data)=>resolve(data));
+      setTimeout(()=>reject({return: false}), 5000);
+    });
+    console.log(response);
+    await utils.wait(375);
     console.log(response);
     if (response.return) {
-      video.setAttribute("src", response.data);
+      response = await response.blob();
+      response = Buffer.from(await response.text());
+      response = response.toString("base64");
+      let base64 = "data:image/png;base64," + response;
+      video.setAttribute("src", base64);
       video.style.display = "block";
       deviceNotConnected.style.display = "none";
+      loop();
     } else {
       video.style.display = "none";
       deviceNotConnected.style.display = "block";
       clearInterval(interval);
-      setTimeout(start, 15000);
+      setTimeout(loop, 15000);
     }
-  }, 375);
+  }catch(error){
+    console.error(error);
+    video.style.display = "none";
+    deviceNotConnected.style.display = "block";
+    clearInterval(interval);
+    setTimeout(loop, 15000);
+  }
 }
-start();
+loop();
 
 </script>

@@ -4,8 +4,8 @@
   "description": "Virtual Lab for node js",
   "main": "server.js",
   "scripts": {
-    "test": "ts-node backendInput/index.ts",
-    "start": "ts-node backendInput/index.ts",
+    "test": "ts-node backend/index.ts",
+    "start": "ts-node backend/index.ts",
     "compile": "tsc -build"
   },
   "author": "Jose Soto Reza and Alan Nevarez Zamora",

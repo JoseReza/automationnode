@@ -1,4 +1,3 @@
-import * as deviceRouter from "./deviceRouter";
 import * as childProcess from "child_process";
 import * as dataRouter from "./dataRouter";
 import * as events from "./events";
@@ -94,8 +93,6 @@ app.post("/petition", login.check, async (request: any, response: any) => {
 });
 
 app = dataRouter.start(app);
-app = deviceRouter.start(app);
-
 app.use("/", express.static(__dirname + "/../frontend/unprotected")); //unprotected for assets
 app
   .use(login.check)
