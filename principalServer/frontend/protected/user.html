@@ -7,21 +7,49 @@
     <link rel="stylesheet" href="bootstrap.css" />
     <link rel="shortcut icon" href="./icon.png" type="image/x-icon" />
     <title>User access</title>
+    <style>
+      #logo {
+        position: relative;
+        animation-name: animationLogo;
+        animation-duration: 10s;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes animationLogo {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        33% {
+          transform: rotate(120deg);
+        }
+
+        66% {
+          transform: rotate(240deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
     <div
       id="userData"
       style="
-        margin-left: 3rem;
-        margin-top: 3rem;
-        margin-right: 3rem;
-        padding: 2rem;
+        margin-top: 2%;
+        margin-left: 10%;
+        margin-right: 10%;
+        padding: 1.5rem;
         border-radius: 10px;
-        min-height: 10rem;
       "
       class="bg-dark text-white"
     ></div>
-    <div id="divTemplates"></div>
+    <div
+      id="divTemplates"
+      style="margin-top: 2%; margin-left: 10%; margin-right: 10%"
+    ></div>
   </body>
 </html>
 <script>
@@ -55,21 +83,23 @@
 
     //userData.innerHTML = JSON.stringify(user);
     userData.innerHTML = `
-    <div style="float: left; margin: 0.5rem;">
-      <img src="./ncie.png" style="width: 5rem; border-radius: 25%;" alt="Avatar">
+    <div style="margin: 0.25rem; padding: 0.5rem; text-align: center; border-radius: 10px;" class="bg-primary">
+      <img id="logo" src="./icon.png" style="width: 3rem; border-radius: 25%; cursor: pointer;" alt="Avatar"  onclick="window.open('https://automationnode.github.io');">
+      <br>
+      <div style="margin-top: 1rem;">Automation Node</div>
     </div>
-    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-primary">
-        <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-dark">
+    <div style="border-radius: 10px; margin: 0.25rem; text-align: center;  padding: 0.25rem; width: auto;" class="bg-primary">
+        <div style="border-radius: 10px; margin: 0.25rem; padding: 0.25rem; width: auto;" class="bg-dark">
             My id is ${user.id}
         </div>
     </div>
-    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-primary">
-        <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" class="bg-dark">
+    <div style="border-radius: 10px; margin: 0.25rem; text-align: center;  padding: 0.25rem; width: auto;" class="bg-primary">
+        <div style="border-radius: 10px; margin: 0.25rem; padding: 0.25rem; width: auto;" class="bg-dark">
             Logged as ${user.name}
         </div>
     </div>
-    <div style="border-radius: 10px; margin: 0.5rem; padding: 0.5rem; width: auto; float: right;" class="bg-danger">
-        <button style="margin: 0.5rem; padding: 0.5rem; width: auto; float: left;" id="logoutButton" class="btn btn-danger">Log out</button>
+    <div style="border-radius: 10px; margin: 0.25rem; text-align: center; padding: 0.25rem; width: auto;" class="bg-danger">
+        <button style="margin: 0.5rem; padding: 0.25rem; width: auto;" id="logoutButton" class="btn btn-danger">Log out</button>
     </div>
   `;
 
@@ -95,7 +125,7 @@
           if (localTemplate.id == globalTemplate.id) {
             let divTemplate = document.createElement("div");
             divTemplate.innerHTML += `
-                    <div style="margin: 3rem; padding: 3rem; border-radius: 10px; text-align: center; float: left;" class="bg-primary text-white">
+                    <div style="margin: 3%; padding: 2.5rem; border-radius: 10px; text-align: center; float: left;" class="bg-primary text-white">
                         <div style="left: 0; width: 4rem; border-radius: 10px;" class="bg-warning">${globalTemplate.id}</div>
                         <div style="border-radius: 10px; margin: 0.25rem; padding: 1rem;" class="bg-dark">
                             <h3>${globalTemplate.name}</h3>
@@ -128,7 +158,9 @@
               window.open(
                 `${window.location.origin}/templates/${
                   globalTemplate.endpoint
-                }.html?user=${JSON.stringify(user)}`
+                }.html?user=${JSON.stringify(user)}&template=${JSON.stringify(
+                  globalTemplate
+                )}`
               );
             });
 
@@ -190,7 +222,7 @@
       divTemplates.innerHTML = `
         <div style="text-align: center;" class="text-white">
             <h2 style="border-radius: 10px; margin: 4%; padding: 4%" class="bg-dark">
-                It seems you don't have templates assigned, please request to your team to acces to any template
+                It seems you don't have templates assigned, please request to your team leader to access to any template
             </h2>
         </div>
         `;

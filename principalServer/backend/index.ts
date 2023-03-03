@@ -33,6 +33,13 @@ email.start(configurationJson);
 
 //Without login
 
+app.get("/getTimestamp", (request: any, response: any) => {
+  response.send({
+    return: true,
+    data: Date.now()
+  });
+});
+
 app.get("/publicUrl", (request: any, response: any) => {
   let configurationJson = JSON.parse(
     fs.readFileSync(__dirname + "/../configuration.json", { encoding: "utf-8" })
@@ -70,7 +77,7 @@ app.get("/configuration.json", login.check, (request: any, response: any) => {
 
 app.post("/petition", login.check, async (request: any, response: any) => {
   console.log(request.body);
-  try{
+  try {
     let petition: petition = request.body.petition as petition;
     let response = await fetch(petition.url, {
       headers: {
@@ -78,11 +85,11 @@ app.post("/petition", login.check, async (request: any, response: any) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(petition.body),
-      method: petition.method
+      method: petition.method,
     });
-    request.body.data = await response.text();;
+    request.body.data = await response.text();
     request.body.return = true;
-  }catch(error){
+  } catch (error) {
     console.error(error);
     request.body.data = error;
     request.body.return = false;

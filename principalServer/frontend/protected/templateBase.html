@@ -8,12 +8,94 @@
     <link rel="icon" href="/icon.png" />
     <title></title>
   </head>
-  <div id="divConsole" style="display: none;"></div>
+  <button id="buttonConsole" class="btn btn-dark btn-sm" style="width: 100%;">Console</button>
+  <div id="divConsole" style="display: none; max-height: 40%;"></div>
   <script src="/console.js"></script>
   <script src="/utils.js"></script>
   <body>
   </body>
   <script>
-    document.body.style.height = document.body.scrollWidth + 'px';
+    let buttonConsole = document.getElementById("buttonConsole");
+    let consoleShow = false;
+    buttonConsole.addEventListener("click", function(){
+      consoleShow = !consoleShow;
+      if(consoleShow){
+        divConsole.style.display = "block";
+      }else{
+        divConsole.style.display = "none";
+      }
+    });
+    let printedOneTime = false;
+    async function start() {
+      document.body.style.height = document.body.scrollWidth + "px";
+      try {
+        let request = await fetch(`${location.origin}/getTimestamp`);
+        request = await request.json();
+        if (request.return) {
+          let timestamp = request.data;
+          let configuration = await utils.getConfiguration();
+          let url = new URL(location.href);
+          let user = JSON.parse(url.searchParams.get("user"));
+          let template = JSON.parse(url.searchParams.get("template"));
+          for(let globalUser of configuration.users){
+            if(user.id == globalUser.id){
+              for(let globalTemplate of globalUser.templates){
+                if(globalTemplate.id == template.id){
+                  let date = new Date(timestamp);
+                  if(globalTemplate.schedule.start.hours <= globalTemplate.schedule.end.hours){ //End.hours and Start.hours in the same day:
+                    let trancurredTimeSinceLastDayInMs = ((date.getHours() * 3600000) + (date.getMinutes() * 60000) + (date.getSeconds() * 1000));
+                    let calculatedTimeFromScheduleStartForDayOffsetInMs = ((globalTemplate.schedule.start.hours * 3600000) + (globalTemplate.schedule.start.minutes * 60000) + (globalTemplate.schedule.start.seconds * 1000));
+                    let calculatedTimeFromScheduleEndForDayOffsetInMs = ((globalTemplate.schedule.end.hours * 3600000) + (globalTemplate.schedule.end.minutes * 60000) + (globalTemplate.schedule.end.seconds * 1000));
+                    let scheduledTimeStartInMs = timestamp - trancurredTimeSinceLastDayInMs + calculatedTimeFromScheduleStartForDayOffsetInMs;
+                    let scheduledTimeEndInMs = timestamp - trancurredTimeSinceLastDayInMs + calculatedTimeFromScheduleEndForDayOffsetInMs;
+                    if(!printedOneTime){
+                      console.log(`-->Start: ${new Date(scheduledTimeStartInMs)}`);
+                      console.log(`-->Current: ${new Date(timestamp)}`);
+                      console.log(`-->End: ${new Date(scheduledTimeEndInMs)}`);
+                      printedOneTime = true;
+                    }
+                    if(!(timestamp >= scheduledTimeStartInMs && timestamp < scheduledTimeEndInMs)){
+                      throw "";
+                    }
+                  }else if (globalTemplate.schedule.start.hours > globalTemplate.schedule.end.hours){ // end.hours at day before and start.hours at day after
+                    let date = new Date();
+                    let trancurredTimeSinceLastDayInMs = ((date.getHours() * 3600000) + (date.getMinutes() * 60000) + (date.getSeconds() * 1000));
+                    let dayToMs = 86400000; // day in milliseconds equivalent
+                    let calculatedTimeFromScheduleStartForDayOffsetInMs = ((globalTemplate.schedule.start.hours * 3600000) + (globalTemplate.schedule.start.minutes * 60000) + (globalTemplate.schedule.start.seconds * 1000));
+                    let calculatedTimeFromScheduleEndForDayOffsetInMs = dayToMs + ((globalTemplate.schedule.end.hours * 3600000) + (globalTemplate.schedule.end.minutes * 60000) + (globalTemplate.schedule.end.seconds * 1000));
+                    let scheduledTimeStartInMs = Date.now() - trancurredTimeSinceLastDayInMs + calculatedTimeFromScheduleStartForDayOffsetInMs;
+                    let scheduledTimeEndInMs = Date.now() - trancurredTimeSinceLastDayInMs + calculatedTimeFromScheduleEndForDayOffsetInMs;
+                    if(!printedOneTime){
+                      console.log(`-->Start: ${new Date(scheduledTimeStartInMs)}`);
+                      console.log(`-->Current: ${new Date(timestamp)}`);
+                      console.log(`-->End: ${new Date(scheduledTimeEndInMs)}`);
+                      printedOneTime = true;
+                    }
+                    if(!(timestamp >= scheduledTimeStartInMs && timestamp < scheduledTimeEndInMs)){
+                      throw "";
+                    }
+                  }
+                }
+              }
+            }
+          }
+          await utils.wait(1000).then(start);
+        } else {
+          document.body.innerHTML = `
+            <div class="bg-dark text-white" style="margin: 20%; padding: 2.5rem; text-align: center; border-radius: 10px;">
+              <h1>Template is not available in this moment, please refresh to check again</h1>
+            </div>  
+          `;
+        }
+      } catch (error) {
+        console.error(error);
+        document.body.innerHTML = `
+            <div class="bg-dark text-white" style="margin: 20%; padding: 2.5rem; text-align: center; border-radius: 10px;">
+              <h1>Template is not available in this moment, please refresh to check again</h1>
+            </div>
+          `;
+      }
+    }
+    start();
   </script>
 </html>

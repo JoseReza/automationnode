@@ -32,6 +32,7 @@ export function check(request: any, response: any, next: any) {
 
           if (_user.admin) {
             _user.admin = undefined;
+            user.id = _user.id;
             response.redirect(`/admin.html?user=${JSON.stringify(user)}`);
           } else {
             _user.admin = undefined;

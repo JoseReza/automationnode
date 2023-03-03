@@ -40,7 +40,7 @@
     <br>
     <div style="text-align: center; width: 60%; margin-left: 20%; border-radius: 10px; margin-top: 2%;" class="bg-secondary text-dark">
         <br>
-        <img src="/icon.png" width="200" style="border: 10%; margin: 0.5rem;" alt="Avatar" id="logo">
+        <img src="/icon.png" style="border: 10%; margin: 0.5rem; cursor: pointer; width: 8rem;" alt="Avatar" id="logo" onclick="window.open(`https://automationnode.github.io`);">
         <h2>Automation Node</h2>
         <br>
         <h3 style="border-radius: 10px; width: 75%; margin-left: 12.5%; padding: 1%;" class="bg-primary text-white">Management device server</h3>
@@ -49,19 +49,22 @@
     <br>
     <div style="text-align: center; border-radius: 10px; color: #000; width: 60%; margin-left: 20%; color: white;" class="bg-secondary">
         <br>
-        <h5 style="width: 35%; margin-left: 15%; padding: 0.5%; float:left;" class="bg-dark">User or email:</h5>
-        <input type="text" id="userText" placeholder="user" style="float: left; margin-left: 1rem;">
         <br>
-        <div style="clear: both;"></div>
-        <h5  style="width: 35%; margin-left: 15%; padding: 0.5%; float: left;" class="bg-dark">Static password:</h5>
-        <input type="text" id="passwordText" placeholder="password" style="float: left; margin-left: 1rem;">  
+        <div style="text-align: center; border-radius: 10px; color: #000; width: 90%; margin-left: 5%; color: white;" class="bg-primary">
+            <br>
+            <h5 style="width: 70%; margin-left: 15%; padding: 0.5%; border-radius: 5px;" class="bg-dark">User or email:</h5>
+            <input type="text" id="userText" placeholder="user" style="width: 70%;">
+            <br>
+            <br>
+            <h5  style="width: 70%; margin-left: 15%; padding: 0.5%; border-radius: 5px;" class="bg-dark">Static password:</h5>
+            <input type="text" id="passwordText" placeholder="password" style="width: 70%;">  
+            <br>
+            <br>
+        </div>
+        <button id="confirmButton" style="margin-top: 5%;  width: 100%;" class="btn btn-primary">Login</button>   
         <br>
-        <br>
-        <button id="confirmButton" class="btn btn-primary">Login</button>   
-        <br>
-        <br>   
     </div>
-    <div style="margin: 2%; width: 60%; margin-left: 20%; border-radius: 10px; text-align: center; padding: 2%; display: none;" class="bg-secondary text-dark" id="divPublicUrl"></div>
+    <div style="margin: 1%; width: 60%; margin-left: 20%; border-radius: 10px; text-align: center; padding: 1%; display: none;" class="bg-secondary text-dark" id="divPublicUrl"></div>
 </body>
 </html>
 <script>

@@ -15,7 +15,8 @@ function Utils() {
       return user;
     },
     getRender: async function(){
-      return document.getElementsByTagName("render")[0];
+      let render = document.getElementsByTagName("render")[document.getElementsByTagName("render").length - 1];
+      return render;
     },
 
     wait: async function (delay) {
@@ -96,7 +97,9 @@ showInfo();
 const initContentTemplate = `
 <render></render>
 <script>
-    let render = utils.getRender();
+async function start(){
+    let render = await utils.getRender();
     render.innerHTML = '<h1>This is a new template!!</h1>';
     console.log("Hello world!!");
+}start();
 </script>`;

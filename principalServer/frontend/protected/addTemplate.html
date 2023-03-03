@@ -126,12 +126,17 @@
   });
 
   addButton.addEventListener("click", async function () {
+    let content = String(codeEditor.getValue());
+    console.log(content[content.length - 4]);
+    if(content[content.length - 4] == '\r' || content[content.length - 3] == '\n'){
+      content = content.substr(0, content.length - 4);
+    }
     if (templateName.value) {
       let body = {
         saveNewTemplate: true,
         template: {
           name: templateName.value,
-          content: codeEditor.getValue(),
+          content,
         },
       };
 

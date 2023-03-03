@@ -81,7 +81,7 @@
 
       <div class="bg-dark text-white"
         style="border-radius: 10px; width: 30%; margin-top: 3%; padding: 1%; float: left; margin-left: 3%;">
-        <img id="logo" src="/icon.png" style="padding: 1%; width: 30%" />
+        <img id="logo" src="/icon.png" style="padding: 1%; width: 30%; cursor: pointer;"  onclick="window.open(`https://automationnode.github.io`);"/>
         <h4>Automation Node</h4>
       </div>
 
@@ -516,7 +516,7 @@
 
         buttonGo.addEventListener("click", async function () {
           window.open(
-            `templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}`
+            `templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}&template=${JSON.stringify(templatesArray[i].configuration)}`
           );
         });
 
@@ -533,7 +533,7 @@
 
           buttonGo.addEventListener("click", async function () {
             window.open(
-              `${configurationJson.ngrok.url}/templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}`
+              `${configurationJson.ngrok.url}/templates/${templatesArray[i].configuration.endpoint}.html?user=${JSON.stringify(user)}}&template=${JSON.stringify(templatesArray[i].configuration)}`
             );
           });
         }
