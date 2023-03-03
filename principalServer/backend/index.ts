@@ -1,3 +1,4 @@
+import * as customConsole from "./customConsole"
 import * as childProcess from "child_process";
 import * as dataRouter from "./dataRouter";
 import * as events from "./events";
@@ -32,6 +33,15 @@ events.start(configurationJson.server.intervalUpdate);
 email.start(configurationJson);
 
 //Without login
+
+app.get("/getConsole", (request: any, response: any) => {
+  let content = customConsole.content;
+  customConsole.clear();
+  response.send({
+    return: true,
+    data: content
+  });
+});
 
 app.get("/getTimestamp", (request: any, response: any) => {
   response.send({
