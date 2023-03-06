@@ -162,7 +162,8 @@ app.listen(Number(configurationJson["server"]["port"]), async () => {
     }
   }
   if (os.platform() == "linux") {
-    if (configurationJson["server"]["showBrowser"]) {
+    if (configurationJson["server"]["showBrowser"] && 
+    configurationJson["server"]["production"]) {
       childProcess.exec(
         `chromium-browser http://localhost:${Number(
           configurationJson["server"]["port"]
