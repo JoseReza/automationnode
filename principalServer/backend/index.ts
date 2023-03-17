@@ -139,8 +139,8 @@ app.listen(Number(configurationJson["server"]["port"]), async () => {
     console.error(error);
     console.log("-->Probably the ngrok authtoken is wrong or expired");
   }
-
-  if (os.platform() == "win32") {
+  setTimeout(()=>{
+    if (os.platform() == "win32") {
     if (
       configurationJson["server"]["showBrowser"] &&
       configurationJson["server"]["production"]
@@ -162,7 +162,8 @@ app.listen(Number(configurationJson["server"]["port"]), async () => {
     }
   }
   if (os.platform() == "linux") {
-    if (configurationJson["server"]["showBrowser"]) {
+    if (configurationJson["server"]["showBrowser"] && 
+    configurationJson["server"]["production"]) {
       childProcess.exec(
         `chromium-browser http://localhost:${Number(
           configurationJson["server"]["port"]
@@ -179,4 +180,5 @@ app.listen(Number(configurationJson["server"]["port"]), async () => {
       );
     }
   }
+  }, 10000);
 });

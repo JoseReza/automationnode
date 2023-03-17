@@ -1,2 +1,4 @@
 /principalServer/node_modules/
 /principalServer/package-lock.json
+/principalServer/.env
+/nodeServer/fpgaNode/.env
