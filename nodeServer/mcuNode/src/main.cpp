@@ -35,35 +35,6 @@ void setup()
 
 void loop()
 {
-
-  pinMode(1, OUTPUT);
-  digitalWrite(1, 1);
-  delay(10000);
-  digitalWrite(1, 0);
-  delay(10000);
-
-  pinMode(2, OUTPUT);
-  digitalWrite(2, 1);
-  delay(10000);
-  digitalWrite(2, 0);
-  delay(10000);
-
-  pinMode(3, OUTPUT);
-  digitalWrite(3, 1);
-  delay(10000);
-  digitalWrite(3, 0);
-  delay(10000);
-
-  pinMode(4, OUTPUT);
-  digitalWrite(4, 1);
-  delay(10000);
-  digitalWrite(4, 0);
-  delay(10000);
-
-  if (backendJson["wifi"]["accessPoint"]["activated"] == true)
-  {
-    dnsServer.processNextRequest();
-  }
   if (restart)
   {
     displayRestarting();

@@ -8,27 +8,8 @@
 #include "_json.h"
 #include "_interpreter.h"
 
-DNSServer dnsServer;
 AsyncWebServer server(80);
 String contentBody = "";
-
-class CaptiveRequestHandler : public AsyncWebHandler
-{
-public:
-    CaptiveRequestHandler() {}
-    virtual ~CaptiveRequestHandler() {}
-
-    bool canHandle(AsyncWebServerRequest *request)
-    {
-        // request->addInterestingHeader("ANY");
-        return true;
-    }
-
-    void handleRequest(AsyncWebServerRequest *request)
-    {
-        request->send(SPIFFS, "/index.html");
-    }
-};
 
 void serverStart()
 {
@@ -66,13 +47,6 @@ void serverStart()
                 response->addHeader("Access-Control-Allow-Credentials", "true");
                 request->send(response);
             } });
-
-    if (backendJson["wifi"]["accessPoint"]["activated"] == true)
-    {
-        Serial.println("--> Activated DNS Handler");
-        dnsServer.start(53, "*", WiFi.softAPIP());
-        server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
-    }
 
     server.begin();
 }

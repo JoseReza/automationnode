@@ -6,21 +6,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/bootstrap.css" />
     <link rel="icon" href="/icon.png" />
-    <title>fpgaTwoTemplate</title>
+    <title>mcuOneTemplate</title>
   </head>
-  <button id="buttonConsole" class="btn btn-dark btn-sm" style="width: 100%;">Console</button>
-  <div id="divConsole" style="display: none; max-height: 40%;"></div>
+  <button id="buttonConsole" class="btn btn-dark btn-sm" style="width: 39%; float: right;">Console</button>
+  <br style="clear: both;">
+  <div id="divConsole" style="display: block; max-width: 40%; height: 50rem; float: right;"></div>
   <script src="/console.js"></script>
   <script src="/utils.js"></script>
+  <script src="/aceEditor/ace.js"></script>
+  <script src="/aceEditor/mode-html.js"></script>
+  <script src="/aceEditor/theme-chrome.js"></script>
+  <script src="/aceEditor/ext-language_tools.js"></script>
   <body>
 <render></render>
 <script>
 async function start(){
     let render = await utils.getRender();
-    render.innerHTML = '<h1>This is a new template!!</h1>';
-    console.log("Hello world!!");
+    render.innerHTML = '<h1 class="bg-primary text-white" style="border-radius: 4px;">Mcu Node Programming</h1>';
+
+    let buttonRun = document.createElement("button");
+    buttonRun.classList.add("btn");
+    buttonRun.classList.add("btn-success");
+    buttonRun.classList.add("btn-sm");
+    buttonRun.style.width = "60%";
+    buttonRun.innerHTML = "Run";
+    render.appendChild(buttonRun);
+    buttonRun.addEventListener("click", function(){
+      eval(mcuEditor.getValue());
+    });
+
+    let divEditor = document.createElement("div");
+    divEditor.id = "divEditor";
+    divEditor.style.position = "relative";
+    divEditor.style.height = "40rem";
+    render.appendChild(divEditor);
+
+    let mcuEditor = ace.edit("divEditor");
+      mcuEditor.setTheme("ace/theme/chrome");
+      mcuEditor.session.setMode("ace/mode/javascript");
+      mcuEditor.setOptions({
+      fontSize: "12pt",
+      enableBasicAutocompletion: true,
+      enableLiveAutocompletion: true,
+    });
+
+    mcuEditor.setValue(`
+
+let mcuNodeIp = "192.168.4.1";
+
+async function start(){
+    
+    let endPoint = "http://"+mcuNodeIp+"/data";
+    
+    await utils.fetch(endPoint, "post", {
+        execute: true,
+        instruction: {
+            action: "pinMode", 
+            gpio: 2,
+            value: "OUTPUT"
+        }
+    });
+    
+    await utils.fetch(endPoint, "post", {
+        execute: true,
+        instruction: {
+            action: "digitalWrite", 
+            gpio: 2,
+            value: "LOW"
+        }
+    });
+    await utils.wait(1000);
+    
+    await utils.fetch(endPoint, "post", {
+        execute: true,
+        instruction: {
+            action: "digitalWrite", 
+            gpio: 2,
+            value: "HIGH"
+        }
+    });
+    await utils.wait(1000);
+}
+start();
+
+    
+
+    `);
+
 }start();
-</script
+</script>
   </body>
   <script>
     let buttonConsole = document.getElementById("buttonConsole");
