@@ -7,6 +7,7 @@
 
 char wifiname[30] = "";
 char wifipassword[30] = "";
+
 String localIp;
 
 void wifiAccesPointConnect(String wifiName, String wifiPassword, String id)
@@ -34,8 +35,8 @@ void wifiAccesPointConnect(String wifiName, String wifiPassword, String id)
 void wifiClientConnect(String wifiName, String wifiPassword, DynamicJsonDocument configuration)
 {
 
-  wifiName.toCharArray(wifiname, 20);
-  wifiPassword.toCharArray(wifipassword, 20);
+  wifiName.toCharArray(wifiname, 30);
+  wifiPassword.toCharArray(wifipassword, 30);
 
   Serial.println("\nwifiname: " + String(wifiname));
   Serial.println("wifipassword: " + String(wifipassword));
@@ -50,6 +51,7 @@ void wifiClientConnect(String wifiName, String wifiPassword, DynamicJsonDocument
       Serial.println("Error in wifi client static configuration.");
     }
   }
+
 
   WiFi.begin(wifiname, wifipassword);
 

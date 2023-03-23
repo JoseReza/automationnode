@@ -96,21 +96,17 @@ buttonCancel.addEventListener("click", function () {
 });
 
 let interval = undefined;
-
 async function loop() {
   try{
     let response = await new Promise((resolve, reject)=>{
       utils.fetch(`http://${device.direction}:${device.port}/capture`,"get",).then((data)=>resolve(data));
       setTimeout(()=>reject({return: false}), 5000);
     });
-    console.log(response);
-    await utils.wait(375);
+    await utils.wait(150);
     console.log(response);
     if (response.return) {
-      response = await response.blob();
-      response = Buffer.from(await response.text());
-      response = response.toString("base64");
-      let base64 = "data:image/png;base64," + response;
+      let base64 = response.getBase64();
+      console.log(base64);
       video.setAttribute("src", base64);
       video.style.display = "block";
       deviceNotConnected.style.display = "none";

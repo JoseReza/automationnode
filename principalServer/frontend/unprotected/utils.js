@@ -55,7 +55,26 @@ function Utils() {
         );
         let responseFromServer = await response.json();
         if(responseFromServer.return){
-          responseJson.data = responseFromServer.data;
+          let responseFromServerArrayBuffer = [];
+          for(let key of Object.keys(responseFromServer.data)){
+            responseFromServerArrayBuffer.push(responseFromServer.data[key]);
+          }
+          responseJson.data = responseFromServerArrayBuffer;
+          responseJson.type = responseFromServer.type;
+          responseJson.getBase64 = function() {
+              let charsConcatenated = '';
+              for (var i = 0; i < responseFromServerArrayBuffer.length; i++) {
+                  charsConcatenated += String.fromCharCode( responseFromServerArrayBuffer[ i ] );
+              }
+              return `data:${responseFromServer.type};base64,${window.btoa( charsConcatenated )}`;
+          }
+          responseJson.getText = function() {
+              let charsConcatenated = '';
+              for (var i = 0; i < responseFromServerArrayBuffer.length; i++) {
+                  charsConcatenated += String.fromCharCode( responseFromServerArrayBuffer[ i ] );
+              }
+              return charsConcatenated;
+          }
           responseJson.return = true;
         }else{
           responseJson.data = responseFromServer.data;

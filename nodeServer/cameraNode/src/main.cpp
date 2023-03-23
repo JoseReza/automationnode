@@ -18,6 +18,7 @@ void setup(){
     displayStart();
     displayPresentation();
 
+
     DynamicJsonDocument configuration = stringToJson(readFile("/configuration.json"));
     serializeJsonPretty(configuration, Serial);
     
@@ -37,6 +38,7 @@ void setup(){
 
 void loop(){
   delay(100);
+
   displayLoop(wifiname, wifipassword, localIp);
   if(restart){
     displayRestarting();

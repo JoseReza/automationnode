@@ -89,7 +89,7 @@ app.post("/petition", login.check, async (request: any, response: any) => {
   console.log(request.body);
   try {
     let petition: petition = request.body.petition as petition;
-    let response = await fetch(petition.url, {
+    let responseForArrayBuffer = await fetch(petition.url, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -97,7 +97,12 @@ app.post("/petition", login.check, async (request: any, response: any) => {
       body: JSON.stringify(petition.body),
       method: petition.method,
     });
-    request.body.data = await response.text();
+    let responseForBlob = responseForArrayBuffer.clone();
+    let blob = await responseForBlob.blob();
+    let arrayBuffer = await responseForArrayBuffer.arrayBuffer();
+    request.body.data = new Uint8Array(arrayBuffer);
+    request.body.type = blob.type;
+    response.clone
     request.body.return = true;
   } catch (error) {
     console.error(error);

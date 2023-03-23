@@ -23,7 +23,7 @@ String readFile(String path)
 {
   String content = "";
   File file = SPIFFS.open(path);
-  if (!file || file.isDirectory())
+  if ((!file || file.isDirectory()))
   {
     Serial.println("--> Failed to open file for reading");
   }
