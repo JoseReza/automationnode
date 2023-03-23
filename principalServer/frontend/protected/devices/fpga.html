@@ -139,7 +139,7 @@
         }
       );
       if (request.return) {
-        let response = JSON.parse(request.data); //Este parse fue porque es
+        let response = JSON.parse(request.getText()); //Este parse fue porque es
         //es un dispositivo de
         //Automation Node
         if (response.return) {
@@ -251,7 +251,7 @@
             location.reload();
           }, 60000);
         } else {
-          data = JSON.parse(data.data).data;
+          data = JSON.parse(data.getText()).data;
           console.log(data);
         }
 
