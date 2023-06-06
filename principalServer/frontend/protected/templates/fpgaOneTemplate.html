@@ -28,14 +28,52 @@
         port: "5000",
         id: 1,
       };
+      
+      let deviceCamera = {
+        name:"cameraOne",
+        type:"camera",
+        protocol:"tcp/ip",
+        port:"80",
+        direction:"192.168.1.100",
+        id:2
+      };
 
       async function start() {
         let render = await utils.getRender();
         let user = await utils.getUser();
         let configuration = await utils.getConfiguration();
 
-        let deviceIframe = document.createElement("iframe");
-        deviceIframe.setAttribute(
+        let deviceCameraImg = document.createElement("img");
+        deviceCameraImg.style.width = "250px";
+        render.appendChild(deviceCameraImg);
+        
+        let loop = async ()=>{
+            try{
+                let response = await new Promise((resolve, reject)=>{
+                  utils.fetch(`http://${deviceCamera.direction}:${deviceCamera.port}/capture`,"get",).then((data)=>resolve(data));
+                  setTimeout(()=>reject({return: false}), 5000);
+                });
+                await utils.wait(150);
+                if (response.return) {
+                  let base64 = response.getBase64();
+                  deviceCameraImg.setAttribute("src", base64);
+                  deviceCameraImg.style.display = "block";
+                  loop();
+                } else {
+                  deviceCameraImg.style.display = "none";
+                  loop();
+                }
+              }catch(error){
+                console.error(error);
+                deviceCameraImg.style.display = "block";
+                setTimeout(loop, 15000);
+              }
+        };
+        loop();
+        
+
+        let deviceFpgaIframe = document.createElement("iframe");
+        deviceFpgaIframe.setAttribute(
           "src",
           location.origin +
             "/devices/fpga.html?user=" +
@@ -43,9 +81,9 @@
             "&&device=" +
             JSON.stringify(device)
         );
-        deviceIframe.style.width = "100%";
-        deviceIframe.style.height = "100%";
-        render.appendChild(deviceIframe);
+        deviceFpgaIframe.style.width = "100%";
+        deviceFpgaIframe.style.height = "100%";
+        render.appendChild(deviceFpgaIframe);
       }
       start();
     </script>

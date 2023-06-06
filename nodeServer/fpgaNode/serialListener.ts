@@ -2,9 +2,7 @@ const { SerialPort } = require("serialport");
 
 export let readings = {};
 
-export async function start() {
-  
-  let path = "COM5";
+export async function start( path = "COM3" ) {
 
   let portList = await SerialPort.list();
   console.log(portList);
@@ -45,7 +43,7 @@ export async function start() {
 
     // Open errors will be emitted as an error event
     port.on("error", function (err: any) {
-      console.log("Error: ", err.data);
+      console.log("Error: ", err);
     });
   } catch (error) {
     console.log(error);

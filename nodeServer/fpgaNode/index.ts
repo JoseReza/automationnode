@@ -13,12 +13,14 @@ let app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
+console.log(process.env);
+
 async function start() {
   ngrok.authtoken(String(process.env.authtoken));
   let ngrokForFpgaIde = await ngrok.connect(Number(process.env.fpga_ide_port));
   console.log("-->FpgaServer ngrokUrl:", ngrokForFpgaIde);
 
-  await serialListener.start();
+  await serialListener.start(process.env.logic_analizer);
 
   app.post("/data", async (request: any, response: any) => {
     console.log(request.body);
